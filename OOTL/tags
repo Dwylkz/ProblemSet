@@ -1,0 +1,27 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AE	main.cpp	/^	void AE(int u, int v){$/;"	f	struct:Graph
+AE	main.cpp	/^	void AE(int u, int v, int c){$/;"	f	struct:Network
+AFE	main.cpp	/^	void AFE(int u, int v, int c){$/;"	f	struct:Network
+E	main.cpp	/^	VE E;$/;"	m	struct:Graph	file:
+Edge	main.cpp	/^		Edge(int _v = 0, int _c = 0, int _t = 0){$/;"	f	struct:Network::Edge
+Edge	main.cpp	/^		Edge(int _v = 0, int _t = 0){$/;"	f	struct:Graph::Edge
+Edge	main.cpp	/^	struct Edge: Graph::Edge{$/;"	s	struct:Network	file:
+Edge	main.cpp	/^	struct Edge{$/;"	s	struct:Graph	file:
+Graph	main.cpp	/^	Graph(int V){$/;"	f	struct:Graph
+Graph	main.cpp	/^struct Graph{$/;"	s	file:
+L	main.cpp	/^	VI L;$/;"	m	struct:Graph	file:
+Network	main.cpp	/^	Network(int V){$/;"	f	struct:Network
+Network	main.cpp	/^struct Network: virtual Graph{$/;"	s	file:
+VE	main.cpp	/^	typedef vector<Edge> VE;$/;"	t	struct:Graph	file:
+VI	main.cpp	/^	typedef vector<int> VI;$/;"	t	struct:Graph	file:
+c	main.cpp	/^		int v, c, t;$/;"	m	struct:Network::Edge	file:
+main	main.cpp	/^int main(){$/;"	f
+t	main.cpp	/^		int v, c, t;$/;"	m	struct:Network::Edge	file:
+t	main.cpp	/^		int v, t; $/;"	m	struct:Graph::Edge	file:
+v	main.cpp	/^		int v, c, t;$/;"	m	struct:Network::Edge	file:
+v	main.cpp	/^		int v, t; $/;"	m	struct:Graph::Edge	file:

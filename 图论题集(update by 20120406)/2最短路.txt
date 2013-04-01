@@ -1,0 +1,108 @@
+【HDU】
+1548    A strange lift				基础最短路(或bfs)★
+2544    最短路	 				基础最短路★
+3790    最短路径问题				基础最短路★
+2066    一个人的旅行				基础最短路(多源多汇,可以建立超级源点和终点)★
+2112    HDU Today				基础最短路★
+1874    畅通工程续				基础最短路★
+1217    Arbitrage   				货币交换 Floyd (或者 Bellman-Ford 判环)★
+1245    Saving James Bond			计算几何+最短路★
+1317    XYZZY  					Bellman-Ford判环,有负权★
+1535    Invitation Cards   			有向图的来回最短路,(反向建图)★
+1546    Idiomatic Phrases Game  		最短路★
+2680    Choose the best route   		最短路★
+2923    Einbahnstrasse				最短路★
+3339    In Action  				最短路+背包★
+2224    The shortest path			双调旅行商问题★★
+2807    The Shortest Path			矩阵运算+最短路(floyd)★★
+1595    find the longest of the shortest	枚举+最短路(删掉任意一条边的最长最短路)★★
+3986    Harry Potter and the Final Battle 	枚举+最短路(删掉任意一条边的最长最短路)★★
+1599    find the mincost route			floyd求最小环★
+1839	Delay Constrained...			二分下限+最短路(带限制最短路)★★	
+3631 	Shortest Path                           Floyd插点法★★
+4114	Disney's FastPass			最短路+二维状压DP(难)★★★
+3832    Earth Hour				三点连通(斯坦纳树)★
+3873    Invade the Mars				Dij变体(好题!,带限制最短路)★★★
+4063 	Aircraft				几何构图+最短路★★★★
+
+hdu4179	Difficult Routes			dis[][]开二维状态的最短路(带限制最短路)★★
+
+===================================================================
+
+1869 	六度分离 				Floyd最短路★
+1385    Minimum Transport Cost    		最短路+输出路径(输出字典序最小路径,有点恶心)★★	
+1224    free DIY Tour 				最短路+输出路径★
+1142    A Walk Through the Forest  		最短路+记忆搜索★★
+1596    find the safest road   			乘积最小的最短路★
+1598    find the most comfortable road		二分速度差+最短路(带限制最短路)★★
+2722    Here We Go(relians) Again		最短路★
+2962    Trucking  				二分+最短路(带限制最短路)★★
+1690    Bus System 				最短路★
+2433    Travel					删边+最短路之和(预处理桥边)★★★			
+2363    Cycling					二分+最短路(带限制最短路)★★
+2377    Bus Pass				最短路(寻找一个点的最长最短路最小)★★
+2833    WuKong					最短路+记忆化搜索(求两条最短路的最多公共点)★★
+1688    Sightseeing				最短次短路条数★★
+3191    How Many Paths Are There		次短路条数★★
+2482    Transit search				最短路★★★
+3768 	Shopping				最短路+dfs(或最短路+状压DP)★★
+3035    War					平面图最小割(建图麻烦)★★
+3870    Catch the Theves 			平面图最小割(建图麻烦)★★
+3860	Circuit Board				平面图最小割(建图麻烦)★★
+
+=======================================================================================================
+=======================================================================================================
+
+【POJ】
+1062 	昂贵的聘礼			竟然可以和最短路联系起来★★
+1094 	Sorting It All Out		Floyd判环+拓扑排序★
+1125	Stockbroker Grapevine		Floyd★
+1135 	Domino Effect			最短路,比较有意思★★
+1161 	Walls				最短路(图太恶心了)★★
+1502 	MPI Maelstrom			Floyd★
+1511    Invitation Cards		来回最短路★
+1556	The Doors  			计算几何+最短路★★
+1724 	ROADS				带限制的最短路,dis[][]开二维来记录信息(或广搜)★★
+1734 	Sightseeing trip		floyd最小环路径★
+1797 	Heavy Transportation		二分枚举+最短路★
+1847 	Tram				简单最短路★
+1860	Currency Exchange		货币兑换★
+1949 	Chores				反向建边,求最长路★★
+2139 	Six Degrees of Cowvin Bacon	Floyd★
+2240	Arbitrage			货币兑换★
+2253	Frogger				二分+最短路★
+2312 	坦克大战			spfa最短路本质变形-->广搜★
+2387 	Til the Cows Come Home		基础最短路★
+2394	Checking an Alibi		最短路★
+2449	Remmarguts' Date		A*求第K短路★★
+2457 	Part Acquisition		最短路 (输出路径)★★
+2472 	106 miles to Chicago		乘积最短路(log一下,乘变加)★★
+
+===================================================================
+
+2502	Subway
+2570 	Fiber Network floyd
+3013 	圣诞树
+3037	Skiing
+3072 	Robot
+3114 	Countries in War 强联通+最短路
+3160 	Father Christmas flymouse 强联通+最长路
+3255 	Roadblocks
+3259 	Wormholes（寻找负权回路）
+3268 	Silver Cow Party
+3311 	Hie with the Pie floyd+状压
+3328 	Cliff Climbing
+3439 	Server Relocation
+3463 	Sightseeing 次短路条数
+3159
+3521	Geometric Map	计算几何+最短路
+3549	GSM phone 计算几何+最短路
+3594 	Escort of Dr. Who How
+3613 	Cow Relays  经过N条边的最短路 // floyd + 二分矩阵
+3615 	Cow Hurdles
+3621 	最优比率环
+3635 	full tank?
+3660 	传递闭包
+3662 	Telephone Lines
+
+

@@ -1,0 +1,21 @@
+【HDU】
+1878	欧拉回路  判断
+3018	Ant Trip 一笔画问题
+1116
+2894	兹鼓欧拉回路
+1956
+3472	混合欧拉
+
+【POJ】
+2513  	欧拉路
+1041  	John's trip  欧拉回路
+1386 	Play on Words  单词接龙
+2230	Watchcow  欧拉回路
+2513 	Colored Sticks  无向图欧拉路
+2337 	Catenyms  欧拉路径
+1392 	Ouroboros Snake  兹鼓欧拉回路
+1780  	code
+1637  	混合欧拉
+
+【zoj】
+1992

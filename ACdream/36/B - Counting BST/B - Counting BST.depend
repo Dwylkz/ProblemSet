@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1339171163 source:/home/dwylkz/Dwylkz/Hust/Contest/ACdream二群(174034438)训练赛(36)/B - Counting BST/main.cpp
+	<iostream>
+	<stdio.h>
+	<stdlib.h>
+	<math.h>
+	<algorithm>
+	<string.h>
+	<map>
+	<vector>
+

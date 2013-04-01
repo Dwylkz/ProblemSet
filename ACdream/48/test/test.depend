@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1344078315 source:/home/dwylkz/桌面/Kimady/ACdream群(2群250413308)训练赛(48)/test/main.cpp
+	<iostream>
+	<cstring>
+	<cstdlib>
+	<cstdio>
+	<cmath>
+	<algorithm>
+
+1344094690 source:/home/dwylkz/桌面/Kimady/ACdream群2群250413308训练赛48/test/main.cpp
+	<iostream>
+	<cstring>
+	<cstdlib>
+	<cstdio>
+	<math.h>
+	<algorithm>
+

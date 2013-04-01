@@ -1,0 +1,37 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+AB	main.cpp	/^	typedef bool AB[MAXN];$/;"	t	namespace:Dwylkz	file:
+AD	main.cpp	/^	typedef double AD[MAXN];$/;"	t	namespace:Dwylkz	file:
+AI	main.cpp	/^	typedef int AI[MAXN];$/;"	t	namespace:Dwylkz	file:
+ALD	main.cpp	/^	typedef LD ALD[MAXN];$/;"	t	namespace:Dwylkz	file:
+ALL	main.cpp	/^	typedef LL ALL[MAXN];$/;"	t	namespace:Dwylkz	file:
+C	main.cpp	/^LL C[MAXM][MAXM];$/;"	v
+C_ini	main.cpp	/^void C_ini(){$/;"	f
+Dwylkz	main.cpp	/^namespace Dwylkz{$/;"	n	file:
+FK	main.cpp	38;"	d	file:
+INFI	main.cpp	/^	const int INFI = ~0u >> 1;$/;"	m	namespace:Dwylkz	file:
+INFL	main.cpp	/^	const LL INFL = ~0ull >> 1;$/;"	m	namespace:Dwylkz	file:
+LD	main.cpp	/^	typedef long double LD;$/;"	t	namespace:Dwylkz	file:
+LL	main.cpp	/^	typedef long long LL;$/;"	t	namespace:Dwylkz	file:
+MAXM	main.cpp	/^const int MAXM = 1005;$/;"	v
+MAXN	main.cpp	/^	const int MAXN = 1000005;$/;"	m	namespace:Dwylkz	file:
+MOD	main.cpp	/^	const int MOD = 1e9 + 7;$/;"	m	namespace:Dwylkz	file:
+MS	main.cpp	33;"	d	file:
+Nre	main.cpp	36;"	d	file:
+PG_ini	main.cpp	/^void PG_ini(){$/;"	f
+Rep	main.cpp	35;"	d	file:
+S	main.cpp	/^LL S[MAXM][MAXM], dp[MAXM];$/;"	v
+S_ini	main.cpp	/^void S_ini(){$/;"	f
+UI	main.cpp	/^	typedef unsigned int UI;$/;"	t	namespace:Dwylkz	file:
+dp	main.cpp	/^LL S[MAXM][MAXM], dp[MAXM];$/;"	v
+main	main.cpp	/^int main()$/;"	f
+n	main.cpp	/^int n, ph;$/;"	v
+pg	main.cpp	/^AB pg;$/;"	v
+ph	main.cpp	/^int n, ph;$/;"	v
+pi	main.cpp	/^AI pi, pn;$/;"	v
+pn	main.cpp	/^AI pi, pn;$/;"	v
+pri	main.cpp	/^vector<int> pri;$/;"	v

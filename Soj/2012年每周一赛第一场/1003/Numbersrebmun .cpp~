@@ -1,0 +1,32 @@
+#include <stdlib>
+#include <cstdio>
+#include <iostream>
+#include <string>
+#define Rep(c, a, b) for (int c = a; c < b; c++)
+#define MAXN (40)
+
+char na[MAXN];
+
+int main()
+{
+	#ifndef ONLINE_JUDGE
+		freopen("test.txt", "rt", stdin);
+	#endif
+	
+	int n, l;
+	bool same;
+	
+	scanf("%d", &n);
+	while (n--)
+	{
+		same = 1;
+		l = strlen(na);
+		scanf("%s", name);
+		Rep(i, 0, l / 2)
+			if (na[i] != na[l - i - 1])
+				same = 0;
+		puts(same? "YES": "NO");
+	}
+	
+	return 0;
+}

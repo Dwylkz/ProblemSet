@@ -1,0 +1,93 @@
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <cstring>
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <cctype>
+#include <queue>
+#include <stack>
+#include <cmath>
+using namespace std;
+//STL-Alias
+#define UN(c, a) unique(c, a)
+#define MS(c, a) memset(c, a, sizeof c)
+#define FLC(c, a ,b) fill(c, c + a, b)
+#define LOS(c, a, b) lower_bound(c, a, b)
+#define UPS(c, a, b) upper_bound(c, a, b)
+//Syntax-Alias
+#define Rep(c, a, b) for (int c = (a); c < (b); c++)
+#define Nre(c, a, b) for (int c = (a); c > (b); c--)
+//B-OP
+#define LM(x, y) ((x) << (y))
+#define RM(x, y) ((x) >> (y))
+#define GB(x, y) (RM(x, y) & 1)
+#define SB(x, y) (LM(1, y) | x)
+#define SBI(x, a, b) ((LM(1, b) - LM(1, a)) | x)
+#define CBI(x, a, b) (~(LM(1, b) - LM(1, a)) & x)
+//DEBUG
+#define FK puts("Fuck here!")
+#define PA(s, c, a, b, p, f){\
+	printf(s);\
+	Rep(c, a, b) printf(p, (f));\
+	puts("");}
+//Constant
+#define MAXN (1 << 16)
+//Type-Alias
+typedef long long LL;
+typedef long double LD;
+typedef int AI[MAXN];
+typedef double AD[MAXN];
+typedef LL ALL[MAXN];
+typedef LD ALD[MAXN];
+
+
+struct Edge
+{
+	int v, w, n;
+	Edge(int _v = 0, int _w = 0, int _n = -1)
+		: v(_v), w(_w), n(_n) {}
+};
+vector<Edge> E;
+int L[MAXN];
+void G_ini()
+{
+	E.clear();	
+	MS(L, -1);
+}
+void AE(int u, int v, int w, int n)
+{
+	L[u] = E.size();
+	E.push_back(Edge(v, w, n));
+}
+
+struct DST
+{
+	vector<int> D;
+	void ini(int *s, int n)
+	{
+		D.clear();
+		Rep(i, 0, n) D.push_back(s[i]);
+		sort(D.begin(), D.end());
+		D.erase(UN(D.begin(), D.end()), D.end());
+	}
+	int operator [] (int x)
+	{
+		return LOW(D.begin(), D.end(), x) - D.begin();
+	}
+} dst;
+
+int main()
+{
+#if 1
+	freopen("test.txt", "r", stdin);
+#endif
+	//Initialize
+	//Solve
+#if 0
+	freopen("test.out", "w", stdout);
+#endif
+	return 0;
+}

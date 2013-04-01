@@ -1,0 +1,10 @@
+A: 99% Sum
+B: 70% Hash
+C: 50% String
+D: 60% String, Number Bases
+E: 25% DP::LIS
+F: 30% Geometry, Enum
+G: 20% BFS
+H: 30% Greedy, Combination
+I: 25% Enum, Find rule
+J: 15% Combination, DP, Matrix, Quick Module

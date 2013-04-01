@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1344093900 source:/home/dwylkz/桌面/Kimady/ACdream群2群250413308训练赛48/F/F/main.cpp
+	<iostream>
+	<cstring>
+	<cstdlib>
+	<cstdio>
+	<cmath>
+	<vector>
+	<algorithm>
+	<map>
+

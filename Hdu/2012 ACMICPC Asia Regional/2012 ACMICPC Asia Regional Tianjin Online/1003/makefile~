@@ -1,0 +1,2 @@
+main: Island\ Transport.cpp
+	g++ Island\ Transport.cpp -o Island\ Transport

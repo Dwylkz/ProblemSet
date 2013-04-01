@@ -1,0 +1,129 @@
+#include <iostream>
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+using namespace std;
+
+class BigInteger{
+public:
+    BigInteger () { for (int i = 0; i < 2010; i++) str[i] = '0'; }
+    void display () { printf ("%s\n", str); }
+    char * operator = (char *s)
+    {
+        strcpy (str, s);
+        len = strlen (s);
+        return s;
+    }
+	friend istream & operator >> (istream &in, BigInteger &p);
+    friend BigInteger operator + (BigInteger &a, BigInteger &b);
+    friend BigInteger operator * (BigInteger &a, BigInteger &b);
+	friend bool operator >= (BigInteger &a, BigInteger &b);
+	friend bool operator <= (BigInteger &a, BigInteger &b);
+    char str[100005];
+    int len;			//一个大数的位数
+};
+
+istream & operator >> (istream &in, BigInteger &p)
+{
+	in >> p.str;
+	p.len = strlen (p.str);
+	return in;
+}
+BigInteger operator + (BigInteger &a, BigInteger &b)
+{
+    BigInteger tp, ta, tb, res;
+    int k = a.len > b.len ? a.len : b.len, w = 0, i;
+    //翻转
+    for (i = a.len - 1; i >= 0; i--)
+        ta.str[w++] = a.str[i];
+    ta.str[w] = 0;
+    w = 0;
+    for (i = b.len - 1; i >= 0; i--)
+        tb.str[w++] = b.str[i];
+    tb.str[w] = 0;
+    w = 0;
+    //按位相加
+    for (i = 0; i < k; i++)
+    {
+        if (ta.str[i] == 0)
+            ta.str[i] = '0';
+        if (tb.str[i] == 0)
+            tb.str[i] = '0';
+        tp.str[i] = ((ta.str[i]-'0') + (tb.str[i]-'0') + w) + '0';
+        w = 0;
+        if (tp.str[i] > '9')
+            tp.str[i] -= 10, w = 1;
+    }
+    if (w > 0)
+        tp.str[k]++, k++;
+    w = 0;
+    for (i = k - 1; i >= 0; i--)
+        res.str[w++] = tp.str[i];
+    res.str[w] = 0;
+    res.len = k;
+    return res;
+}
+
+BigInteger operator * (BigInteger &a, BigInteger &b)
+{
+    BigInteger tp, ta, tb, res;
+    int k = b.len + a.len, w = 0, i, j;
+    //翻转
+    for (w = 0, i = a.len - 1; i >= 0; i--)
+        ta.str[w++] = a.str[i] - '0';
+    ta.str[w] = 0;
+    for (w = 0, i = b.len - 1; i >= 0; i--)
+        tb.str[w++] = b.str[i] - '0';
+    tb.str[w] = 0;
+    //按位相加
+    for (i = 0; i < k; i++) res.str[i] = 0;
+    for (i = 0; i < a.len; i++)
+        for (j = 0; j < b.len; j++)
+        {
+            res.str[i + j] += ta.str[i] * tb.str[j];
+            res.str[i + j + 1] += res.str[i + j] / 10;
+            res.str[i + j] %= 10;
+        }
+    while (!res.str[k - 1] && k > 1) k--;
+    res.len = k;
+    for (i = 0; i < k; i++) res.str[i] += '0';
+    for (i = 0; i < k / 2; i++)
+    {
+        res.str[i] ^= res.str[k - i - 1];
+        res.str[k - i - 1] ^= res.str[i];
+        res.str[i] ^= res.str[k - i - 1];
+    }
+    return res;
+}
+
+bool operator >= (BigInteger &a, BigInteger &b)
+{
+	if (a.len > b.len)
+		return true;
+	if (a.len == b.len && strcmp (a.str, b.str) >= 0)
+		return true;
+	return false;
+}
+
+bool operator <= (BigInteger &a, BigInteger &b)
+{
+	if (a.len < b.len)
+		return true;
+	if (a.len == b.len && strcmp (a.str, b.str) <= 0)
+		return true;
+	return false;
+}
+
+BigInteger a, b, c;
+
+int main()
+{
+	while (cin >> a >> b)
+	{
+		c = a * b;
+		c.display ();
+	}
+    return 0;
+}

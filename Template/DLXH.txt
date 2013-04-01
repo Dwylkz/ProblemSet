@@ -1,0 +1,120 @@
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include <set>
+//#include <map>
+#include <queue>
+#include <vector>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+//#include <ctype.h>
+using namespace std;
+#define N 1005
+#define M 200005
+#define FF(i, A, s) for(int i = A[s]; i != s; i = A[i])
+
+int H[N], O[N], cnt;
+int U[M], D[M], L[M], R[M], C[M], S[M], row[M];
+
+void init (int c)
+{
+	for (int i = 0; i <= c; i++)
+	{
+		S[i] = 0;
+		U[i] = D[i] = i;
+		L[i+1] = i;
+		R[i] = i + 1;
+	}
+	R[ cnt=c ] = 0;
+	memset (H, -1, sizeof(H));
+}
+
+void remove (int c)
+{
+	L[R[c]] = L[c], R[L[c]] = R[c];
+	FF (i, D, c) FF (j, R, i)
+	{
+		U[D[j]] = U[j];
+		D[U[j]] = D[j];
+		--S[C[j]];
+	}
+}
+
+void resume (int c)
+{
+	FF (i, U, c) FF (j, L, i)
+	{
+		++S[C[j]];
+		U[D[j]] = j;
+		D[U[j]] = j;
+	}
+	L[R[c]] = c, R[L[c]] = c;
+}
+
+bool Dance (int k)
+{
+	int tp, c;
+	if (!R[0])
+	{
+		printf ("%d", k);
+		for (int i = 0; i < k; i++)
+			printf (" %d", row[O[i]]);
+		printf ("\n");
+		return 1;
+	}
+	tp = N;
+	for (int i = R[0]; i; i = R[i])
+		if (S[i] < tp)
+			tp = S[c=i];
+	remove (c);
+	FF (i, D, c)
+	{
+		O[k] = i;
+		FF (j, R, i) remove (C[j]);
+		if (Dance (k+1)) return 1;
+		FF (j, L, i) resume (C[j]);
+	}
+	resume (c);
+	return 0;
+}
+
+void Link (int r, int c)
+{
+	++S[ C[++cnt]=c ];
+	D[cnt] = D[c];
+	U[D[c]] = cnt;
+	U[cnt] = c;
+	D[c] = cnt;
+	if (H[r] < 0) H[r] = L[cnt] = R[cnt] = cnt;
+	else
+	{
+		R[cnt] = R[H[r]];
+		L[R[H[r]]] = cnt;
+		L[cnt] = H[r];
+		R[H[r]] = cnt;
+	}
+	row[cnt] = r;
+}
+
+int main()
+{
+	int r, c, k, i, j;
+	while (~scanf ("%d%d", &r, &c))
+	{
+		init (c);
+		for (i = 1; i <= r; i++)
+		{
+			scanf ("%d", &k);
+			while (k--)
+			{
+				scanf ("%d", &j);
+				Link (i, j);
+			}
+		}
+		if (!Dance (0))
+			puts ("NO");
+	}
+	return 0;
+}

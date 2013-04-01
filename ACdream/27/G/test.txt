@@ -1,0 +1,15 @@
+*.*
+4
+main.c
+a.out
+readme
+yacc
+
+*cc*.*a
+2
+cc.a
+aaaacc.aac
+
+c*c.a
+1
+cac.a

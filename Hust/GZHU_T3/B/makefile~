@@ -1,0 +1,7 @@
+objects = main.o
+main: $(objects)
+	g++ -Wall -Wno-deprecated -o main $(objects)
+main.o: main.cpp
+.PHONY: clean
+clean:
+	-rm main.o

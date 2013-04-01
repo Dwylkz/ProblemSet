@@ -1,0 +1,173 @@
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <string>
+#include <set>
+#include <map>
+#include <queue>
+#include <utility>
+#include <iomanip>
+#include <stack>
+#include <list>
+#include <vector>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <ctime>
+#include <ctype.h>
+using namespace std;
+#define inf 0x3fffffff
+#define M 205
+#define LL long long
+#define Max 26
+#define eps 1e-6
+
+struct edge{
+	int v, w, next;
+}e[M<<1], e2[M<<1];
+
+int p[M], p2[M], cnt, cnt2, n, m, S, T;
+
+void init ()
+{
+	cnt = cnt2 = 0;
+	memset (p, -1, sizeof(p));
+	memset (p2, -1, sizeof(p2));
+}
+
+void addedge_spfa (int u, int v, int w)
+{
+	e2[cnt2].v = v;
+	e2[cnt2].w = w;
+	e2[cnt2].next = p2[u];
+	p2[u] = cnt2++;
+}
+
+void addedge_sap (int u, int v, int w)
+{
+	e[cnt].v = v;
+	e[cnt].w = w;
+	e[cnt].next = p[u];
+	p[u] = cnt++;
+	e[cnt].v = u;
+	e[cnt].w = 0;
+	e[cnt].next = p[v];
+	p[v] = cnt++;
+}
+
+int dist[M];
+bool inq[M];
+void spfa (int u)
+{
+	int i, v, w;
+	memset (inq, false, sizeof(inq));
+	for (i = 1; i <= n; i++)
+		dist[i] = inf;
+	dist[u] = 0;
+	queue<int> q;
+	q.push (u);
+	inq[u] = true;
+	while (!q.empty())
+	{
+		u = q.front ();
+		q.pop();
+		inq[u] = false;
+		for (i = p2[u]; i != -1; i = e2[i].next)
+		{
+			v = e2[i].v;
+			w = e2[i].w;
+			if (dist[v] > dist[u] + w)
+			{
+				dist[v] = dist[u] + w;
+				if (!inq[v])
+				{
+					q.push (v);
+					inq[v] = true;
+				}
+			}
+		}
+	}
+}
+
+int pre[M], cur[M], gap[M], dis[M];
+void sap (int s, int t, int n)
+{
+	int i, u, v, w, maxflow = 0, mins = -1;
+
+	for (i = 0; i <= n; i++) cur[i] = p[i];
+	memset (dis, 0, sizeof(dis));
+	memset (gap, 0, sizeof(gap));
+	u = pre[s] = s;
+	gap[0] = n;
+
+	while (dis[s] < n)
+	{
+loop:
+		for (int &ee = cur[u]; ee != -1; ee = e[ee].next)
+		{
+			v = e[ee].v;
+			w = e[ee].w;
+			if (w > 0 && dis[u] == dis[v] + 1)
+			{
+				if (mins == -1 || mins > w) mins = w;
+				pre[v] = u;
+				u = v;
+				if (v == t)
+				{
+					maxflow += mins;
+					for (u = pre[u]; v != s; v = u, u = pre[u])
+					{
+						e[ cur[u] ].w -= mins;
+						e[ cur[u] ^ 1 ].w += mins;
+					}
+					mins = -1;
+				}
+				goto loop;
+			}
+		}
+		int mindis = n;
+		for (i = p[u]; i != -1; i = e[i].next)
+		{
+			v = e[i].v;
+			if (e[i].w > 0 && mindis > dis[v])
+			{
+				cur[u] = i;
+				mindis = dis[v];
+			}
+		}
+		if ((--gap[dis[u]]) == 0) break;
+		gap[dis[u] = mindis+1]++;
+		u = pre[u];
+	}
+	printf ("%d\n", maxflow);
+}
+
+int main()
+{
+	int u, v, w, i, j;
+	while (~scanf ("%d%d", &m, &n))
+	{
+		init();
+		while (m--)
+		{
+			scanf ("%d%d%d", &u, &v, &w);
+			if (u == v) continue;
+			addedge_spfa (u, v, w);
+		}
+		S = 1, T = n;
+		spfa (S);
+		for (i = 1; i <= n; i++)
+		{
+			for (j = p2[i]; j != -1; j = e2[j].next)
+			{
+				v = e2[j].v;
+				w = e2[j].w;
+				if (dist[v] == dist[i] + w)
+					addedge_sap (i, v, w);
+			}
+		}
+		sap (S, T, n);
+	}
+    return 0;
+}
