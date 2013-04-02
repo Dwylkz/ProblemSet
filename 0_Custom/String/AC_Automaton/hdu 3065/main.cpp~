@@ -17,16 +17,16 @@ using namespace std;
 const char input[] = "input.in",
 	  output[] = "input.in";
 const int inf32 = 0x7fffffff,
-	  maxn = 2e6+10;
+	  maxn = 2048 * 8 * 2;
 const long long inf64 = 0x7fffffffffffffffLL; 
 //structure
 //AC Automaton
 //include: queue, cstring
 //usage: obj.Init->obj.Link->(obj.$(others))*
 struct ACA {
-	const static int n = maxn,  //Total of nodes
-		  m = 26,               //Size of charator set
-		  shift = 'A';          //Charactor shift
+	const static int n = 512 * 64 * 2,  //Total of nodes
+		  m = 128,               //Size of charator set
+		  shift = 0;          //Charactor shift
 	struct Node {
 		//Extern
 		//Basic
@@ -36,7 +36,7 @@ struct ACA {
 	};
 	typedef Node *PNode;
 	//Extern
-	const static int kn = 1010;
+	const static int kn = 550;
 	char *key[kn];
 	int kl;
 	//Basic
@@ -119,7 +119,7 @@ struct ACA {
 		}
 		for (int i = 0; i < kn; i++) {
 			if (r[i]) {
-				printf("%s: %d\n", key[i], r[i]);
+				total++;
 			}
 		}
 		return total;
@@ -130,8 +130,54 @@ typedef long long LL;
 //global variable
 ACA aca;
 int n, m;
-char ask[maxn], key[1010][55];
+char ask[maxn], key[maxn],
+	 ec[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+			   abcdefghijklmnopqrstuvwxyz\
+			   0123456789+/";
 //access and mutator
+int Fec(char c) {
+	for (int i = 0; i < 64; i++) {
+		if (ec[i] == c) return i;
+	}
+	return -1;
+}
+void TB(char *s) {
+	static char t[maxn];
+	int sl = strlen(s), tl = 0, pad = 0;
+	for ( ; s[sl - 1] == '='; sl--) {
+		pad++;
+	}
+	for (int i = 0; i < sl / 4; i += 4) {
+		int o = 0;
+		for (int j = i; j < i + 4; j++) {
+			o = o * 64 + Fec(s[j]);
+		}
+		for (int j = 2; 0 <= j; j--) {
+			t[tl + j] = o & 0xff;
+			o >>= 8;
+		}
+		tl += 3;
+	}
+	int o = 0;
+	for (int i = 0; i < sl % 4; i++) {
+		o = o * 64 + Fec(s[i]);
+	}
+	if (pad) {
+		o >>= (3 - pad) << 1;
+		for (int j = pad - 1; 0 <= j; j--) {
+			t[tl + j] = o & 0xff;
+			o >>= 8;
+		}
+		tl += pad;
+	}
+	for (int i = 0; i < tl; i++) {
+		s[i] = t[i];
+	}
+	s[tl] = 0;
+#if 1
+	printf("%d %s\n", tl, s);
+#endif
+}
 //main
 int main() {
 #if 1
@@ -144,21 +190,28 @@ int main() {
 	}
 	puts("");
 #endif
+#if 1
+	char test[] = "aGVsbG8=";
+	TB(test);
+#endif
 	while (~scanf("%d", &n)) {
 		aca.Init();
 		for (int i = 0; i < n; i++) {
-			scanf("%s", key + i);
-			aca.Insert(i + 1, key[i], strlen(key[i]));
+			scanf("%s", key);
+			TB(key);
+			aca.Insert(i + 1, key, strlen(key));
 #if 0
 			printf("%s\n", key[i]);
 #endif
 		}
 		aca.Link();
-		scanf("%s", ask);
-#if 0
-		printf("%s\n", ask);
-#endif
-		aca.Search(ask, strlen(ask));
+		scanf("%d", &m);
+		while (m--) {
+			scanf("%s", ask);
+			TB(ask);
+			printf("%d\n", aca.Search(ask, strlen(ask)));
+		}
+		puts("");
 	}
 	return 0;
 }
