@@ -15,18 +15,17 @@
 using namespace std;
 //constants
 const char input[] = "input.in",
-	  output[] = "input.in";
+	  output[] = "output.out";
 const int inf32 = 0x7fffffff,
-	  maxn = 2048 * 8 * 2;
+	  maxn = 1e5 + 10;
 const long long inf64 = 0x7fffffffffffffffLL; 
 //structure
 //AC Automaton
 //include: queue, cstring
-//usage: obj.Init->obj.Link->(obj.$(others))*
+//usage: obj.Init->obj.Link->(obj.$(others))*->obj.Free
 struct ACA {
-	const static int n = 512 * 64 * 2,  //Total of nodes
-		  m = 128,               //Size of charator set
-		  shift = 0;          //Charactor shift
+	const static int m = 256,  //Size of charator set
+		  shift = 0;           //Charactor shift
 	struct Node {
 		//Extern
 		//Basic
@@ -36,31 +35,29 @@ struct ACA {
 	};
 	typedef Node *PNode;
 	//Extern
-	const static int kn = 550;
-	char *key[kn];
-	int kl;
 	//Basic
-	Node t[n];                  //Storage pool
-	PNode top,                  //t's iterator
-		  rt;                   //Initial State
+	stack<PNode> ct;
+	PNode   rt;                   //Initial State
 	//Init a node
 	//usage: obj.New([length], [Failure Link])
 	PNode New() {
-		memset(top, 0, sizeof(Node));
-		return top++;
+		PNode x = (PNode)malloc(sizeof(Node));
+		memset(x, 0, sizeof(Node));
+		ct.push(x);
+		return x;
 	}
 	//Init
 	//usage: obj.Init()
 	void Init() {
 		//Extern
-		kl = 1;
 		//Basic
-		top = t;
+		for ( ; !ct.empty(); ct.pop()) {
+		}
 		rt = New();
 	}
 	//Append a string
 	//usage: obj.Insert(charactor)
-	void Insert(int a, char *s, int sl) {
+	void Insert(int a, int *s, int sl) {
 		PNode x = rt;
 		for (int i = 0; i < sl; i++) {
 			int k = s[i] - shift;
@@ -69,16 +66,15 @@ struct ACA {
 			}
 			x = x->s[k];
 		}
-		x->a = a;
-		key[kl++] = s;
+		x->a++;
 	}
 	//Failure Linking
 	//usage: obj.Link()
 	void Link() {
-		static PNode Q[n];
-		Q[0] = rt;
-		for (int f = 0, t = 1; f < t; ) {
-			PNode x = Q[f++];
+		queue<PNode> Q;
+		for (Q.push(rt); !Q.empty(); ) {
+			PNode x = Q.front();
+			Q.pop();
 			for (int i = 0; i < m; i++) {
 				if (x->s[i]) {
 					if (x == rt) {
@@ -93,15 +89,18 @@ struct ACA {
 							x->s[i]->p = y->s[i];
 						}
 					}
-					Q[t++] = x->s[i];
+					Q.push(x->s[i]);
 				}
 			}
 		}
 	}
-	int Search(char *s, int sl) {
-		int total = 0, r[kn];
+	//statistic work
+	//usage: obj.Search(key array, array length)
+	int Search(int *s, int sl) {
+		int total = 0;
 		PNode x = rt;
-		memset(r, 0, sizeof(r));
+		map<PNode, bool> h;
+		h.clear();
 		for (int i = 0; i < sl; i++) {
 			int k = s[i] - shift;
 			for ( ; x && (k < 0 ||  m <= k || !x->s[k]); x = x->p) {
@@ -111,18 +110,21 @@ struct ACA {
 				continue;
 			}
 			for (PNode y = x->s[k]; y; y = y->p) {
-				if (y->a) {
-					r[y->a]++;
-				}	
+				if (h.find(y) == h.end()) {
+					total += y->a;
+					h[y] = 1;
+				}
 			}
 			x = x->s[k];
 		}
-		for (int i = 0; i < kn; i++) {
-			if (r[i]) {
-				total++;
-			}
-		}
 		return total;
+	}
+	//Free spaces
+	//usage: obj.Free()
+	void Free(PNode x = 0) {
+		for ( ; !ct.empty(); ct.pop()) {
+			free(ct.top());
+		}
 	}
 };
 //type definition
@@ -130,53 +132,32 @@ typedef long long LL;
 //global variable
 ACA aca;
 int n, m;
-char ask[maxn], key[maxn],
-	 ec[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ\
-			   abcdefghijklmnopqrstuvwxyz\
-			   0123456789+/";
+char ask[maxn], key[maxn], dc[256];
 //access and mutator
-int Fec(char c) {
-	for (int i = 0; i < 64; i++) {
-		if (ec[i] == c) return i;
+void dc_Init() {
+	for (int i = 0; i < 26; i++) {
+		dc['A' + i] = i;
+		dc['a' + i] = 26 + i;
 	}
-	return -1;
+	for (int i = 0; i < 10; i++) {
+		dc['0' + i] = 52 + i;
+	}
+	dc['+'] = 62;
+	dc['/'] = 63;
 }
-void TB(char *s) {
-	static char t[maxn];
-	int sl = strlen(s), tl = 0, pad = 0;
-	for ( ; s[sl - 1] == '='; sl--) {
-		pad++;
+int decode(int *s, int sl) {
+	static int t[maxn];
+	int tl = 0;
+	for (int i = 0; i < sl; i += 4, tl += 3) {
+		int *in = s + i, *out = t + tl;
+		out[0] = (dc[in[0]] << 2) | (dc[in[1]] >> 4);
+		out[1] = in[2] == '='? 0x100: (((dc[in[1]] & 0xf) << 4) | (dc[in[2]] >> 2));
+		out[2] = in[3] == '='? 0x100: ((((dc[in[2]]) & 0x3) << 6) | dc[in[3]]);
 	}
-	for (int i = 0; i < sl / 4; i += 4) {
-		int o = 0;
-		for (int j = i; j < i + 4; j++) {
-			o = o * 64 + Fec(s[j]);
-		}
-		for (int j = 2; 0 <= j; j--) {
-			t[tl + j] = o & 0xff;
-			o >>= 8;
-		}
-		tl += 3;
+	memcpy(s, t, sizeof(t));
+	for ( ; t[tl - 1] == 0x100; tl--) {
 	}
-	int o = 0;
-	for (int i = 0; i < sl % 4; i++) {
-		o = o * 64 + Fec(s[i]);
-	}
-	if (pad) {
-		o >>= (3 - pad) << 1;
-		for (int j = pad - 1; 0 <= j; j--) {
-			t[tl + j] = o & 0xff;
-			o >>= 8;
-		}
-		tl += pad;
-	}
-	for (int i = 0; i < tl; i++) {
-		s[i] = t[i];
-	}
-	s[tl] = 0;
-#if 1
-	printf("%d %s\n", tl, s);
-#endif
+	return tl;
 }
 //main
 int main() {
@@ -184,34 +165,30 @@ int main() {
 	freopen(input, "r", stdin);
 	//freopen(output, "w", stdout);
 #endif
-#if 0
-	for (char c = 0; c < 127; c++) {
-		printf("%d %c\n", c, c);
-	}
-	puts("");
-#endif
-#if 1
-	char test[] = "aGVsbG8=";
-	TB(test);
-#endif
+	static int buf[maxn];
+	dc_Init();
 	while (~scanf("%d", &n)) {
 		aca.Init();
 		for (int i = 0; i < n; i++) {
 			scanf("%s", key);
-			TB(key);
-			aca.Insert(i + 1, key, strlen(key));
-#if 0
-			printf("%s\n", key[i]);
-#endif
+			for (int j = 0, l = strlen(key); j < l; j++) {
+				buf[j] = key[j];
+			}
+			int bl = decode(buf, strlen(key));
+			aca.Insert(i + 1, buf, bl);
 		}
 		aca.Link();
 		scanf("%d", &m);
 		while (m--) {
 			scanf("%s", ask);
-			TB(ask);
-			printf("%d\n", aca.Search(ask, strlen(ask)));
+			for (int j = 0, l = strlen(ask); j < l; j++) {
+				buf[j] = ask[j];
+			}
+			int bl = decode(buf, strlen(ask));
+			printf("%d\n", aca.Search(buf, bl));
 		}
 		puts("");
+		aca.Free();
 	}
 	return 0;
 }
