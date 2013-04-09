@@ -38,16 +38,10 @@ int main() {
 	for (int i = 1; i < maxn; i++) {
 		p[i] = (p[i - 1] * 2) % mod;
 	}
-#if 0
-	for (int i = 0; i < 10; i++) {
-		printf("%lld", p[i]);
-	}
-	puts("");
-#endif
 	while (~scanf("%d%d", &n, &m)) {
 		LL res = 1;
-		for (int i = 0; i < m; i++) {
-			res = (res * p[n - 1]) % mod;
+		for (int i = 0; i < n; i++) {
+			res = (res * ((p[m] - 1)- i)) % mod;
 #if 0
 			printf("%lld\n", res);
 #endif
