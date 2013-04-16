@@ -17,16 +17,16 @@ using namespace std;
 const char input[] = "input.in",
 	  output[] = "output.out";
 const int inf32 = 0x7fffffff,
-	  maxn = 26,
+	  maxn = 110,
 	  mod =  20090717,
-	  maxm = (1 << 10);
+	  maxm = 26; 
 const long long inf64 = 0x7fffffffffffffffLL; 
 //structure
 //AC Automaton
 //include: queue, cstring
 //usage: obj.Init->obj.Link->(obj.$(others))*->obj.Free
 struct ACA {
-	enum {n = 11, m = 26, shift = 'a'};
+	enum {m = maxm, shift = 'a'};
 	struct Node {
 		//Extern
 		//Basic
@@ -38,7 +38,7 @@ struct ACA {
 	//Extern
 	//Basic
 	int sz;
-	Node t[101];
+	Node t[1200];
 	PNode   rt;                   //Initial State
 	//Init a node
 	//usage: obj.New([length], [Failure Link])
@@ -65,7 +65,7 @@ struct ACA {
 			}
 			x = x->s[k];
 		}
-		x->a |= 1 << a;
+		x->a = a;
 	}
 	//Failure Linking
 	//usage: obj.Link()
@@ -86,7 +86,7 @@ struct ACA {
 			for (int i = 0; i < m; i++) {
 				if (x->s[i]) {
 					x->s[i]->p = x->p->s[i];
-					x->s[i]->a |= x->p->s[i]->a;
+					x->s[i]->a += x->p->s[i]->a;
 					Q.push(x->s[i]);
 				} else {
 					x->s[i] = x->p->s[i];
@@ -98,23 +98,18 @@ struct ACA {
 //type definition
 typedef long long LL;
 typedef unsigned char UC;
+typedef pair<int, int> II;
 //global variable
 ACA aca;
 int n, m, k, buf[maxn];
-UC key[maxn];
-int dp[maxn][101][maxm];
+UC key[maxn][maxm];
+int dp[maxn][1200];
+II pre[maxn][1200];
 //access and mutator
 void CTI(int *t, UC *s, int sz) {
 	for (int i = 0; i < sz; i++) {
 		t[i] = s[i];
 	}
-}
-int GW(int x) {
-	int res = 0;
-	for ( ; x; x >>= 1) {
-		res += x & 1;
-	}
-	return res;
 }
 //main
 int main() {
@@ -122,45 +117,72 @@ int main() {
 	freopen(input, "r", stdin);
 	//freopen(output, "w", stdout);
 #endif
-	while (scanf("%d%d%d", &n, &m, &k), n || m || k) {
+	int T;
+	scanf("%d", &T);
+	while (T--) {
+		scanf("%d%d", &n, &m);
 		aca.Init();
 		for (int i = 0; i < m; i++) {
-			scanf("%s", key);
-			CTI(buf, key, strlen((char*)key));
-			aca.Insert(i, buf, strlen((char*)key));
+			scanf("%s", key + i);
+		}
+		for (int i = 0; i < m; i++) {
+			int w;
+			scanf("%d", &w);
+			CTI(buf, key[i], strlen((char*)key[i]));
+			aca.Insert(w, buf, strlen((char*)key[i]));
 		}
 		aca.Link();
 		memset(dp, 0, sizeof(dp));
-		dp[0][0][0] = 1;
-		ACA::PNode t = aca.t;
+		memset(pre, -1, sizeof(pre));
+		II res(0, 0);
+		ACA::Node *t = aca.t;
 		for (int i = 1; i <= n; i++) {
-			for (int j = 0; j < aca.sz; j++) {
-				for (int l = 0, ml = 1 << m; l < ml; l++) {
-					if (!dp[i - 1][j][l]) {
-						continue;
-					}
-					for (int k = 0; k < 26; k++) {
-						int id = t[j].s[k] - t, mask = l | t[id].a;
-						dp[i][id][mask] += dp[i - 1][j][l];
-						if (mod <= dp[i][id][mask]) {
-							dp[i][id][mask] %= mod;
+			queue<int> Q;
+			bool vis[maxn];
+			memset(vis, 0, sizeof(vis));
+			Q.push(0);
+			vis[0] = 1;
+			while (!Q.empty()) {
+				int u = Q.front();
+				Q.pop();
+				for (int k = 0; k < 26; k++) {
+					int v = t[u].s[k] - t;
+					if (dp[i][v] < dp[i - 1][u] + t[v].a) {
+						dp[i][v] = dp[i - 1][u] + t[v].a;
+						if (dp[res.first][res.second] < dp[i][v]) {
+							res = make_pair(i, v);
 						}
+						pre[i][v] = make_pair(i - 1, u);
+					}
+					if (!vis[v]) {
+						vis[v] = 1;
+						Q.push(v);
 					}
 				}
 			}
 		}
-		int res = 0;
-		for (int i = 0; i < aca.sz; i++) {
-			for (int j = 0, ml = 1 << m; j < ml; j++) {
-				if (k <= GW(j)) {
-					res += dp[n][i][j];
-					if (mod <= res) {
-						res %= mod;
-					}
+#if 1
+		printf("%d\n", dp[res.first][res.second]);
+#endif
+		vector<char> ans;
+		II v = res;
+		while (1) {
+			II u = pre[v.first][v.second];
+			if (!v.first) {
+				break;
+			}
+			for (int i = 0; i < maxm; i++) {
+				if (t[u.second].s[i] == t + v.second) {
+					ans.push_back(i + 'a');
+					break;
 				}
 			}
+			v = u;
 		}
-		printf("%d\n", res);
+		for (int i = ans.size() - 1; 0 <= i; i--) {
+			putchar(ans[i]);
+		}
+		puts("");
 	}
 	return 0;
 }
