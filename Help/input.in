@@ -1,0 +1,16 @@
+2
+4 4
+1 2 4 7
+SUM 0 2
+XOR 5 0 0
+OR 6 0 3
+SUM 0 2
+
+4 6
+1 0 0 1
+XOR 1 0 2
+XOR 1 0 1
+SUM 0 2
+SUM 0 0
+SUM 0 1
+SUM 0 0
