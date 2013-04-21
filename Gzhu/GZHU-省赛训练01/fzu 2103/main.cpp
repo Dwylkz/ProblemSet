@@ -54,22 +54,35 @@ int main() {
 			scanf("%d", R + i);
 		}
 		sort(R + 1, R + r + 1);
+		//Possiblity Sum of ID 1 ~ R[1] - 1
 		double Sp = 0.0;
-		for (int i = 1; i <= R[1]; i++) {
+		for (int i = 1; i < R[1]; i++) {
 			Sp += p[i];
 		}
-		int rm = r;
-		double res = C[k][k - r] * pow(Sp, 1.0 * k - r);
-		for (int i = 1; i <= r; i++) {
+		//CR1 as Counter Of R[1]
+		int CR1 = 0, is = 0;
+		for (is = 1; is <= r && R[is] == R[1]; is++) {
+			CR1++;
+		}
+		//Calculate R[2] ~ R[r]'s possible distribution
+		double tp = 1.0;
+		int rm = r -= CR1;
+		for (int i = is; i <= r; i++) {
 			int cnt = 1;
 			for (i++; i <= r && R[i] == R[i - 1]; i++) {
 				cnt++;
 			}
 			i--;
-			res *= C[rm][cnt] * pow(p[R[i]], 1.0 * cnt);
+			tp *= C[rm][cnt] * pow(p[R[i]], 1.0 * cnt);
 			rm -= cnt;
 		}
-		printf("%.6f\n", res);
+		double res = 0.0;
+		//Enumerate R[1]'s amount
+		for (int i = CR1; i <= k - r; i++) {
+			res += C[k][k - r - i] * pow(Sp, k - r - i) *
+				C[r + i][i] * pow(p[R[1]], i);
+		}
+		printf("%.6f\n", res * tp);
 	}
 	return 0;
 }
