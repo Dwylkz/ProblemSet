@@ -10,10 +10,10 @@
 #include <stack>
 using namespace std;
 const int maxn = 1e5+10;
-class TheExperimentDiv2 {
+class EllysCoprimesDiv2 {
 	public:
-	vector <int> determineHumidity(vector <int> intensity, int L, vector <int> leftEnd) {
-		vector <int> res;
+	int getCount(vector <int> numbers) {
+		int res;
 		return res;
 	}
 };

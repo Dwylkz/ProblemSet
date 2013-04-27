@@ -20,11 +20,13 @@ void Init() {
 		fac[i] = fac[i - 1] * i;
 	}
 }
-void Decode(int l, int x, int *t) {
-	int id = 0, h[maxk];
+//Contor En/Decode
+void CTDC(int l, int x, int *t) {
+	int id = 0, h[100];
+	x--;
 	memset(h, 0, sizeof(h));
 	for (int i = l - 1; 0 <= i; i--) {
-		int rm = (x - 1) / fac[i], rank = 0;
+		int rm = x / fac[i], rank = 0;
 		for (int j = 1; j <= l; j++) {
 			rank += !h[j];
 			if (rank == rm + 1) {
@@ -35,8 +37,9 @@ void Decode(int l, int x, int *t) {
 		}
 		x %= fac[i];
 	}
+	puts("");
 }
-int Encode(int l, int *t) {
+int CTEC(int l, int *t) {
 	int res = 0;
 	for (int i = 0; i < l; i++) {
 		int cnt = 0;
@@ -60,10 +63,10 @@ int main()
 		printf(" %d", fac[i]);
 	}
 	puts("");
-	int tp[] = {1, 4, 3, 5}, ec = Encode(4, tp);
+	int tp[] = {4, 5, 3, 2, 1}, ec = Encode(5, tp);
 	printf("%d\n", ec);
-	Decode(4, ec, tp);
-	for (int i = 0; i < 4; i++) {
+	Decode(5, ec, tp);
+	for (int i = 0; i < 5; i++) {
 		printf(" %d", tp[i]);
 	}	
 	puts("");

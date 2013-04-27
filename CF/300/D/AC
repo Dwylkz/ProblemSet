@@ -1,0 +1,30 @@
+#include<cstdio>
+
+typedef long long ll;
+
+const int maxn=33,maxk=1010;
+const int K=1000,P=7340033;
+int f[maxn][maxk],g[maxn][maxk];
+
+void sol(int *a,int *b){
+  for(int i=0;i<=K;++i)
+    for(int j=0;j<=i;++j)
+      a[i]=((ll)b[j]*b[i-j]+a[i])%P;
+}
+
+int main(){
+  int i,T,n,k,s;
+  f[0][0]=1;
+  for(i=1;i<=32;++i){
+    sol(g[i-1],f[i-1]);
+    sol(f[i]+1,g[i-1]);
+    f[i][0]=1;
+  }
+  for(scanf("%d",&T);T--;){
+    scanf("%d%d",&n,&k);
+    for(s=0;n&1;n>>=1)++s;
+    if(!n)--s;
+    printf("%d\n",f[s][k]);
+  }
+  return 0;
+}
