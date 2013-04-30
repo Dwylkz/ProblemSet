@@ -145,7 +145,7 @@ int main() {
 			while (!Q.empty()) {
 				int u = Q.front();
 				Q.pop();
-				for (int k = 0; k < 26; k++) {
+				for (int k = 0; k < maxm; k++) {
 					int v = t[u].s[k] - t;
 					if (dp[i][v] < dp[i - 1][u] + t[v].a) {
 						dp[i][v] = dp[i - 1][u] + t[v].a;
