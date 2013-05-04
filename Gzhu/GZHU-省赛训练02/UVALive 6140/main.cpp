@@ -237,9 +237,6 @@ int main() {
 				res += abs(ldis[toc[u]] - ldis[toc[v]]);
 			}
 			printf("%d\n", res);
-#if 0
-			printf("LCA(%d, %d) = %d\n", cu, cv, lca);
-#endif
 		}
 	}
 	return 0;
