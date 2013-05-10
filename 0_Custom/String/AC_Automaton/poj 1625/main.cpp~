@@ -203,6 +203,9 @@ int main() {
 		dp[0][0] = Int("1");
 		for (int i = 1; i <= M; i++) {
 			for (int j = 0; j < aca.sz; j++) {
+				if (!dp[i - 1][j]) {
+					continue;
+				}
 				for (int k = 0; k < N; k++) {
 					int id = aca.t[j].s[k] - aca.t;
 					if (!aca.t[id].a) {

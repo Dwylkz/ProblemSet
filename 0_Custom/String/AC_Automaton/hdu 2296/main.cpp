@@ -29,6 +29,7 @@ struct ACA {
 	enum {m = maxm, shift = 'a'};
 	struct Node {
 		//Extern
+		int d;
 		//Basic
 		Node *s[m],             //Adjust node
 			 *p;                //Failure link
@@ -74,6 +75,7 @@ struct ACA {
 		rt->p = rt;
 		for (int i = 0; i < m; i++) {
 			if (rt->s[i]) {
+				rt->s[i]->d = 1;
 				rt->s[i]->p = rt;
 				Q.push(rt->s[i]);
 			} else {
@@ -85,6 +87,7 @@ struct ACA {
 			Q.pop();
 			for (int i = 0; i < m; i++) {
 				if (x->s[i]) {
+					x->s[i]->d = x->d + 1;
 					x->s[i]->p = x->p->s[i];
 					x->s[i]->a += x->p->s[i]->a;
 					Q.push(x->s[i]);
@@ -102,11 +105,11 @@ typedef pair<int, int> II;
 //global variable
 ACA aca;
 int n, m, k, buf[maxn];
-UC key[maxn][maxm];
+char key[maxn][maxm];
 int dp[maxn][1200];
-II pre[maxn][1200];
+string st[maxn][1200];
 //access and mutator
-void CTI(int *t, UC *s, int sz) {
+void CTI(int *t, char *s, int sz) {
 	for (int i = 0; i < sz; i++) {
 		t[i] = s[i];
 	}
@@ -128,61 +131,41 @@ int main() {
 		for (int i = 0; i < m; i++) {
 			int w;
 			scanf("%d", &w);
-			CTI(buf, key[i], strlen((char*)key[i]));
-			aca.Insert(w, buf, strlen((char*)key[i]));
+			CTI(buf, key[i], strlen(key[i]));
+			aca.Insert(w, buf, strlen(key[i]));
 		}
 		aca.Link();
-		memset(dp, 0, sizeof(dp));
-		memset(pre, -1, sizeof(pre));
-		II res(0, 0);
-		ACA::Node *t = aca.t;
+		memset(dp, -1, sizeof(dp));
+		int dpmx = 0;
+		string stmx = "";
+		dp[0][0] = 0;
+		for (int i = 0; i <= n; i++) {
+			for (int u = 0; u < aca.sz; u++) {
+				st[i][u] = "";
+			}
+		}
 		for (int i = 1; i <= n; i++) {
-			queue<int> Q;
-			bool vis[maxn];
-			memset(vis, 0, sizeof(vis));
-			Q.push(0);
-			vis[0] = 1;
-			while (!Q.empty()) {
-				int u = Q.front();
-				Q.pop();
-				for (int k = 0; k < maxm; k++) {
-					int v = t[u].s[k] - t;
-					if (dp[i][v] < dp[i - 1][u] + t[v].a) {
-						dp[i][v] = dp[i - 1][u] + t[v].a;
-						if (dp[res.first][res.second] < dp[i][v]) {
-							res = make_pair(i, v);
+			for (int u = 0; u < aca.sz; u++) {
+				if (i <= aca.t[u].d) {
+					continue;
+				}
+				for (int j = 0; j < aca.m; j++) {
+					int v = aca.t[u].s[j] - aca.t;
+					if (dp[i][v] < dp[i - 1][u] + aca.t[v].a
+							|| dp[i][v] == dp[i - 1][u] + aca.t[v].a
+							&& st[i - 1][u] + char(j + 'a') < st[i][v]) {
+						dp[i][v] = dp[i - 1][u] + aca.t[v].a;
+						st[i][v] = st[i - 1][u] + char(j + 'a');
+						if (dpmx < dp[i][v]
+								|| dpmx == dp[i][v] && st[i][v] < stmx) {
+							dpmx = dp[i][v];
+							stmx = st[i][v];
 						}
-						pre[i][v] = make_pair(i - 1, u);
-					}
-					if (!vis[v]) {
-						vis[v] = 1;
-						Q.push(v);
 					}
 				}
 			}
 		}
-#if 1
-		printf("%d\n", dp[res.first][res.second]);
-#endif
-		vector<char> ans;
-		II v = res;
-		while (1) {
-			II u = pre[v.first][v.second];
-			if (!v.first) {
-				break;
-			}
-			for (int i = 0; i < maxm; i++) {
-				if (t[u.second].s[i] == t + v.second) {
-					ans.push_back(i + 'a');
-					break;
-				}
-			}
-			v = u;
-		}
-		for (int i = ans.size() - 1; 0 <= i; i--) {
-			putchar(ans[i]);
-		}
-		puts("");
+		printf("%s\n", stmx.data());
 	}
 	return 0;
 }
