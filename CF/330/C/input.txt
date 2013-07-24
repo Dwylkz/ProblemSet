@@ -1,0 +1,16 @@
+3
+.E.
+E.E
+.E.
+
+3
+EEE
+E..
+E.E
+
+5
+EE.EE
+E.EE.
+E...E
+.EE.E
+EE.EE
