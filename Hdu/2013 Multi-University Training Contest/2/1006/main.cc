@@ -66,93 +66,15 @@ void graph_add_edge(int u, int v)
 
 int n, c;
 
-LL ans;
-struct dp_t {
-  LL val;
-  int pre;
-  LL tail;
-} dp[maxn][4][2];
+LL ans, dp[maxn][4][2];
 void dp_init()
 {
   ans = -1;
-  for (int i = 0; i < n * 8; i++) {
-    *((dp_t*)dp + i) = (dp_t){-1, -1, 0};
-  }
+  memeset(dp, 0, sizeof(dp));
 }
-void dp_son(int u = 0, int p = -1)
+void dp_run(int u = 0, int p = -1)
 {
-  dp_t (&f)[4][2] = dp[u];
-  LL val = V[u].val;
-  int t = V[u].trp;
-  f[t][0] = f[t][1] = (dp_t){val, u};
-  for (int i = L[u]; i != -1; i = E[i].to) {
-    if (i == p) continue;
-    int v = E[i].v;
-    dp_son(v, i ^ 1);
-    dp_t (&g)[4][2] = dp[v];
-    for (int j = 0; j <= c - t; j++) {
-      if (g[j][0].val == -1) continue;
-      if (c && j + t == c && !t && f[c][0].val < g[j][0].val - g[j][0].tail + val) {
-        f[c][1] = f[1][0];
-        f[c][0] = (dp_t){g[j][0].val - g[j][0].tail + val, v, 0};
-      } else if (f[t + j][0].val < g[j][0].val + val) {
-        f[t + j][1] = f[t + j][0];
-        f[t + j][0] = (dp_t){g[j][0].val + val, v, g[j][0].tail};
-      }
-    }
-  }
-  if (t) {
-    f[1][0].tail = f[1][0].val - val;
-    f[1][1].tail = f[1][1].val - val;
-  }
-#if 0
-  printf("%8s node %d(%4lld, %4d):\n", __func__, u, val, t);
-  for (int i = 0 ; i <= c; i++) {
-    printf("\tc = %d, max = (%5lld, %5d, %5lld), ex-max = (%5lld, %5d, %5lld)\n",
-        i,
-        f[i][0].val, f[i][0].pre, f[i][0].tail,
-        f[i][1].val, f[i][1].pre, f[i][1].tail);
-  }
-#endif
-}
-void dp_father(int u = 0, int p = -1)
-{
-  dp_t (&f)[4][2] = dp[u];
-  LL val = V[u].val;
-  int t = V[u].trp;
-  if (p != -1) {
-    int v = E[p].v;
-    dp_t (&g)[4][2] = dp[v];
-    for (int j = 0; j <= c - t; j++) {
-      int k = (g[j][0].pre == u);
-      if (g[j][k].val == -1) continue;
-      if (c && j + t == c && !t && f[c][0].val < g[j][k].val - g[j][k].tail + val) {
-        f[c][1] = f[c][0];
-        f[c][0] = (dp_t){g[j][k].val -  g[j][k].tail + val, v, 0};
-      } else if (f[t + j][0].val < g[j][k].val + val) {
-        f[t + j][1] = f[t + j][0];
-        f[t + j][0] = (dp_t){g[j][k].val + val, v, g[j][k].tail};
-      }
-    }
-  }
-  if (t) {
-    f[1][0].tail = f[1][0].val - val;
-    f[1][1].tail = f[1][1].val - val;
-  }
-  for (int j = 0; j <= c; j++) {
-    ans = max(ans, f[j][0].val);
-  }
-#if 0
-    printf("%8s node %d(%4lld, %4d):\n", __func__, u, val, t);
-    for (int i = 0 ; i <= c; i++) {
-      printf("\tc = %d, max = (%5lld, %5d, %5lld)\n",
-          i,
-          dp[u][i][0].val, dp[u][i][0].pre, dp[u][i][0].tail);
-    }
-#endif
-  for (int i = L[u]; i != -1; i = E[i].to) {
-    if (i == p) continue;
-    dp_father(E[i].v, i ^ 1);
+  for (int i = L[u]; i != -1; i++) {
   }
 }
 
@@ -177,8 +99,7 @@ int main() {
       graph_add_edge(v, u);
     }
     dp_init();
-    dp_son();
-    dp_father();
+    dp_run();
     printf("%lld\n", ans);
   }
   return 0;
