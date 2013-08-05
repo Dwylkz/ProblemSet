@@ -1,0 +1,29 @@
+\def\fcd#1#2{{#1^{\underline#2}}}
+\def\str#1#2{{\left\{\matrix{#1\cr#2}\right\}}}
+\def\com#1#2{{\left(\matrix{#1\cr#2}\right)}}
+\centerline{Hdu::2013--MTC::3::1005}
+\vskip 0.5cm
+\hrule
+\vskip 0.5cm
+\noindent Some mathmatic notation
+$$\fcd{n}{i}=n*(n-1)*...*(n-i+1)$$
+Second-type Stirling Number:$$\str{n}{k}$$
+Binomial Coeffcient $$\com{n}{k}$$
+\noindent There is an egg-pain equality in Concrete Mathmatics.
+$$n^k=\sum_i^k \str{k}{i}*\fcd{n}{i}=\sum_i^k \str{k}{i}*i!*\com{n}{i}$$
+Then, for each $u$
+\def\adj#1{{connect(#1)}}
+\def\dst#1#2{{dist(#1,#2)}}
+\def\smv{{\sum_{v=1}^{n}}}
+$$\eqalign{
+	\smv\dst{u}{v}^k&=\smv\sum_i^k\str{k}{i}*\fcd{\dst{u}{v}}{i}\cr
+	&=\sum_i^k\str{k}{i}* i!*\smv\com{\dst{u}{v}}{i}}$$
+So, all we have to do, is, for each $u$, to calculate its $\smv\com{\dst{u}{v}}{i}$.
+Look at the summation closely, we found that,
+$$\smv\com{\dst{u}{v}}{i}=\smv\com{\dst{u}{v}-1}{i}+\smv\com{\dst{u}{v}-1}{i-1}$$
+Thus, for each node u we can work out all $\smv\com{\dst{u}{v}}{i}$ in $O(nk)$, through
+tree-type dynamic programming.\par
+At last, calculate all $\smv\dst{u}{v}^k$ within $O(nk)$.
+Notice that we could construct stirling triangle, factorial table and pascal triangle in advance,
+with in $O(k^2)$.
+\bye

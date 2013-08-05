@@ -5,7 +5,7 @@
 #include <vector>
 using namespace std;
 const int maxn = 5e4 + 10;
-const int maxm = 5e2 + 10;
+const int maxk = 5e2 + 10;
 const int mod = 10007;
 typedef long long LL;
 
@@ -26,56 +26,65 @@ void graph_add(int u, int v)
   E.push_back(t);
 }
 
-int c[maxm][maxm];
+int s[maxk][maxk];  // stirling
+int f[maxk];        // factorial
+int c[maxk][maxk];  // pascal
+
 void init()
 {
-  memset(c, 0, sizeof(c));
-  for (int i = c[0][0] = 1; i < maxm; i++) {
+  s[0][0] = f[0] = c[0][0] = 1;
+  for (int i = 1; i < maxk; i++) {
+    f[i] = f[i-1] * i % mod;
     c[i][0] = 1;
-    for (int j = 1; j < maxm; j++) 
-      c[i][j] = c[i-1][j] + c[i-1][j-1];
+    for (int j = 1; j < maxk; j++) {
+      s[i][j] = (j * s[i-1][j] % mod + s[i-1][j-1]) % mod;
+      c[i][j] = (c[i-1][j] + c[i-1][j-1]) % mod;
+    }
   }
 #if 0
+  puts("stirling triangle:");
   for (int i = 0; i < 10; i++)
     for (int j = 0; j < 10; j++)
-      printf("%7d%c", c[i][j], j < 9? ' ': '\n');
+      printf("%4d%c", s[i][j], j < 9? ' ': '\n');
+  puts("factorial:");
+  for (int j = 0; j < 10; j++)
+    printf("%4d%c", f[j], j < 9? ' ': '\n');
+  puts("pascal triangle:");
+  for (int i = 0; i < 10; i++)
+    for (int j = 0; j < 10; j++)
+      printf("%4d%c", c[i][j], j < 9? ' ': '\n');
 #endif
 }
 
 int n, k;
 
-int f[maxn][maxm];
-int calc(int *y, int l)
-{
-  int sum = 0;
-  for (int j = 0; j <= l; j++)
-    sum = (sum + c[l][j] * y[j] % mod) % mod;
-#if 0
-  printf("sum = %d\n", sum);
-#endif
-  return sum;
-}
+int d[maxn][maxk];
 void dp_son(int u = 0, int p = -1)
 {
-  memset(f[u], 0, sizeof(f[u]));
+  memset(d[u], 0, sizeof(d[u]));
   for (int i = L[u]; i != -1; i = E[i].to)
     if (i != p) {
       int v = E[i].v;
       dp_son(v, i^1);
       for (int j = 0; j <= k; j++)
-        f[u][j] = (f[u][j] + calc(f[v], j) + 1) % mod;
+        d[u][j] = (d[u][j] + d[v][j] + (j? d[v][j-1]: 0) + c[1][j]) % mod;
     }
+#if 0
+  printf("node %d:\n", u);
+  for (int i = 0; i <= k; i++)
+    printf("\t%4d%c", d[u][i], i < k? ' ': '\n');
+#endif
 }
+int tmp[maxk];
 void dp_father(int u = 0, int p = -1)
 {
-  static int tmp[maxm];
   if (p != -1) {
     int v = E[p].v;
-    memcpy(tmp, f[v], sizeof(f[v]));
-    for (int i = 0; i <= k; i++)
-      tmp[i] -= calc(f[u], i) + 1;
-    for (int i = 0; i <= k; i++)
-      f[u][i] = (f[u][i] + calc(tmp, i) + 1) % mod;
+    memcpy(tmp, d[v], sizeof(d[v]));
+    for (int j = 0; j <= k; j++)
+      tmp[j] = (tmp[j] - (d[u][j] + (j? d[u][j-1]: 0) + c[1][j]) % mod + mod) % mod;
+    for (int j = 0; j <= k; j++)
+      d[u][j] = (d[u][j] + tmp[j] + (j? tmp[j-1]: 0) + c[1][j]) % mod;
   }
   for (int i = L[u]; i != -1; i = E[i].to)
     if (i != p) dp_father(E[i].v, i^1);
@@ -84,12 +93,12 @@ void dp_father(int u = 0, int p = -1)
 int main()
 {
 #if 1
-	freopen("input.in", "r", stdin);
+  freopen("input.in", "r", stdin);
 #endif
   init();
   int T;
   scanf("%d", &T);
-	for ( ; T--; ) {
+  for ( ; T--; ) {
     graph_init();
     scanf("%d%d", &n, &k);
     for (int i = 0; i < n-1; i++) {
@@ -101,24 +110,21 @@ int main()
     }
     dp_son();
 #if 0
-    puts("dp_son");
-    for (int i = 0; i < n; i++) {
-      printf("node %d: ", i);
-      for (int j = 0; j <= k; j++)
-        printf("%d%c", f[i][j], j < k? ' ': '\n');
+    puts("after son");
+    for (int u = 0; u < n; u++) {
+      int sum = 0;
+      for (int i = 0; i <= k; i++)
+        sum = (sum + s[k][i]*f[i]%mod*d[u][i]%mod) % mod;
+      printf("%d\n", sum);
     }
 #endif
     dp_father();
-#if 0
-    puts("dp_father");
-    for (int i = 0; i < n; i++) {
-      printf("node %d: ", i);
-      for (int j = 0; j <= k; j++)
-        printf("%d%c", f[i][j], j < k? ' ': '\n');
+    for (int u = 0; u < n; u++) {
+      int sum = 0;
+      for (int i = 0; i <= k; i++)
+        sum = (sum + s[k][i]*f[i]%mod*d[u][i]%mod) % mod;
+      printf("%d\n", sum);
     }
-#endif
-    for (int i = 0; i < n; i++)
-      printf("%d\n", f[i][k]);
-	}
-	return 0;
+  }
+  return 0;
 }
