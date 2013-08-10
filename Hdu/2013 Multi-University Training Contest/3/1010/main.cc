@@ -4,57 +4,38 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <map>
 using namespace std;
 const int maxn = 5e4 + 10;
 typedef long long LL;
 
-struct seg_node {
-  seg_node *ls, *rs;
-  map<int, bool> d;
-} *top, seg[maxn<<1];
-void build(seg_node *x, int L, int R)
-{
-  x->d.clear();
-  if (L == R) return ;
-  int m = L+R>>1;
-  build(x->ls = ++top, L, m);
-  build(x->ls = ++top, m+1, R);
-}
-void cover(seg_node *x, int L, int R, int l, int r, int k)
-{
-  if (l <= L && R <= R) x->d[k] = 1;
-  else {
-    int m = L+R>>1;
-    if (l <= m) cover(x->ls, L, m, l, r, k);
-    if (m < r) cover(x->ls, m+1, R, l, r, k);
-  }
-}
-int ask(seg_node *x, int L, int R, int l, int r)
-{
-  int ans = 0;
-  if (l <= L && R <= r) ans = x->d.rbegin()->first;
-  else {
-    int m = L+R>>1;
-    if (l <= m) ans = max(ans, ask(x->ls, L, m, l, r));
-    if (m < r) ans = max(ans, ask(x->rs, m+1, R, l, r));
-  }
-  return ans;
-}
-
-struct querry_t {
-  int l, r, id;
-  friend bool operator < (querry_t x, querry_t y)
+struct query {
+  int l, r, i;
+  friend bool operator < (query lhs, query rhs)
   {
-    return x.r < y.r;
+    return lhs.r < rhs.r;
   }
-} querry[maxn];
-int n, q, a[maxn], hash[maxn], ans[maxn];
-vector<int> gn;
+};
+query q[maxn];
+int ans[maxn];
 
-void gen()
+int bia[maxn];
+void bia_init()
 {
+  memset(bia, 0, sizeof(bia));
 }
+void bia_push(int x, int y)
+{
+  for (x++; x; x -= -x&x)
+    bia[x] = max(bia[x], y);
+}
+int bia_ask(int x, int rv = 0)
+{
+  for (x++; x < maxn; x += -x&x)
+    rv = max(rv, bia[x]);
+  return rv;
+}
+
+int n, m, a[maxn], pre[maxn];
 
 int main()
 {
@@ -65,23 +46,30 @@ int main()
   scanf("%d", &T);
 	for ( ; T--; ) {
     scanf("%d", &n);
-    for (int i = 0; i < n; i++) scanf("%d", a+i);
-    scanf("%d", &q);
-    for (int i = 0; i < q; i++) {
-      scanf("%d%d", &querry[i].l, &querry[i].r);
-      querry[i].id = i;
+    for (int i = 0; i < n; i++)
+      scanf("%d", a+i);
+    scanf("%d", &m);
+    for (int i = 0; i < m; i++) {
+      scanf("%d%d", &q[i].l, &q[i].r);
+      q[i].l--, q[i].r--;
+      q[i].i = i;
     }
-    sort(querry, querry + q);
-    build(top = seg, 0, n-1);
-    memset(hash, -1, sizeof(hash));
-    for (int i = 0; i < n; i++) {
-      vector<int> f;
-      gen(f);
-      for (int j = 0; j < f.size(); j++)
-        if (hash[f[j]] != -1)
-        cover(seg, 0, n - 1, 0, hash[f[j]], j);
+    sort(q, q + m);
+    bia_init();
+    memset(pre, -1, sizeof(pre));
+    for (int i = 0, j = 0; i < n && j < m; i++) {
+      for (int k = 1; k*k <= a[i]; k++) 
+        if (a[i] % k == 0) {
+          if (pre[k] != -1) bia_push(pre[k], k);
+          pre[k] = i;
+          if (k*k == a[i]) continue;
+          if (pre[a[i]/k] != -1) bia_push(pre[a[i]/k], a[i]/k);
+          pre[a[i]/k] = i;
+        }
+      for ( ; j < m && q[j].r == i; j++)
+        ans[q[j].i] = q[j].l == q[j].r? 0: bia_ask(q[j].l);
     }
-    for (int i = 0; i < q; i++) printf("%d\n", ans[i]);
+    for (int i = 0; i < m; i++) printf("%d\n", ans[i]);
 	}
 	return 0;
 }
