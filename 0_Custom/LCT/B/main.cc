@@ -15,34 +15,50 @@ namespace lct {
   const int N = maxn;
   struct node {
     node *c[2], *p;
-    int pt;
+    int rev;
+    int type()
+    {
+      if (!p || p->c[0] != this && p->c[1] != this) return 2;
+      return p->c[0] != this;
+    }
+    node *set()
+    {
+      swap(c[0], c[1]);
+      rev ^= 1;
+      return this;
+    }
+    node *push()
+    {
+      if (rev) {
+        for (int i = 0; i < 2; i++)
+          if (c[i]) c[i]->set();
+        rev = 0;
+      }
+      return this;
+    }
     node *update()
     {
       return this;
     }
     node *rotate()
     {
-      node *y = p;
-      p = y->p;
-      if (y->pt != 2) p->c[y->pt] = this;
-      if (y->c[pt] = c[!pt]) c[!(c[!pt]->pt = pt)]->p = y;
-      (y->p = this)->c[!pt] = y->update();
-      swap(pt, y->pt);
-      y->pt ^= 1;
-      return this;
+      p->p->push();
+      node *y = p->push();
+      int b = push()->type(), pb = y->type();
+      if (p = y->p, pb < 2) p->c[pb] = this;
+      if (y->c[b] = c[!b]) c[!b]->p = y;
+      return c[!b] = y, y->update()->p = this;
     }
     node *splay()
     {
-      for ( ; pt != 2; ) {
-        (pt == p->pt? p: this)->rotate();
-        if (pt != 2) rotate();
-      }
+      for ( ; type() < 2; type() < 2? rotate(): 0)
+        type() == p->type()? p->rotate(): rotate();
       return update();
     }
     node *end(int b)
     {
       node *x = this;
-      for ( ; x->c[b]; x = x->c[b]) ;
+      for ( ; x->push()->c[b]; x = x->c[b]) ;
       return x;
     }
   } pool[N], *top;
@@ -52,18 +68,12 @@ namespace lct {
   }
   node *make_tree()
   {
-    return &(*top++ = (node){0, 0, 0, 2});
+    return &(*top++ = (node){0, 0, 0, 0});
   }
   node *access(node *x)
   {
-    for (node *y = x, *z = 0; y; ) {
-      y->splay();
-      if (y->c[1]) y->c[1]->pt = 2;
-      if (z) z->pt = 1;
-      y->c[1] = z;
-      z = y;
-      y = y->update()->p;
-    }
+    for (node *y = x, *z = 0; y; z = y, y = y->update()->p)
+      y->splay()->c[1] = z;
     return x;
   }
   node *find_root(node *x)
@@ -73,10 +83,7 @@ namespace lct {
   node *cut(node *x)
   {
     access(x);
-    if (x->c[0]) {
-      x->c[0]->pt = 2;
-      x->c[0] = 0;
-    }
+    x->c[0] = 0;
     return x;
   }
   node *join(node *x, node *y)
@@ -84,7 +91,12 @@ namespace lct {
     access(x)->p = y;
     return access(x);
   }
+  node *rooting(node *x)
+  {
+    return access(x)->splay()->set();
+  }
 }
+using namespace lct;
 
 int n, m;
 
@@ -96,18 +108,15 @@ int main()
   freopen("input.in", "r", stdin);
 #endif
   for ( ; ~scanf("%d%d", &n, &m); ) {
-    scanf("%d", &n);
-    lct::init();
-    for (int i = 0; i < n; i++)
-      rt[i] = lct::make_tree();
+    init();
+    for (int i = 0; i < n; i++) rt[i] = make_tree();
     char op[10];
     for (int x, y; m--; ) {
       scanf("%s%d%d", op, &x, &y);
+      if (x > y) swap(x, y);
       if (op[0] == 'C') {
-        lct::join(find_root(rt[x-1]), rt[y-1]);
       } else if (op[0] == 'D') {
-      } else {
-      }
+      } else puts(find_root(rt[x-1]) == find_root(rt[y-1])? "Yes": "No");
     }
   }
   return 0;
