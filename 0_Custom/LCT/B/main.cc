@@ -115,7 +115,11 @@ int main()
       scanf("%s%d%d", op, &x, &y);
       if (x > y) swap(x, y);
       if (op[0] == 'C') {
+        rooting(rt[x]);
+        join(rt[x], rt[y]);
       } else if (op[0] == 'D') {
+        rooting(rt[x]);
+        cut(rt[y]);
       } else puts(find_root(rt[x-1]) == find_root(rt[y-1])? "Yes": "No");
     }
   }
