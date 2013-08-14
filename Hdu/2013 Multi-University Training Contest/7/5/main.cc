@@ -52,8 +52,9 @@ namespace dwylkz {
 #define _ls(x, y) ((x)<<((y)*_bw))
 #define _rs(x, y) ((x)>>((y)*_bw))
 #define _gb(x, y) (_rs((x), (y))&_bm)
-#define _cb(x, y) ((x)&~_ls(1, (y)))
+#define _sb(x, y, z) ((x)&~_ls(_bm, (y))|_ls((z), (y)))
 #define _lb(x) (-x&x)
+#define _mp make_pair
   const int N = 5e4+10;
   const int MOD = 1e9+7;
   const double EPS = 1e-8;
@@ -64,10 +65,22 @@ namespace dwylkz {
   typedef char CA[N];
   typedef LL LLA[N];
   typedef map<int, int> MII;
+  typedef map<LL, int> MLLI;
   typedef map<string, int> MSI;
   typedef vector<int> VI;
   typedef vector<LL> VLL;
   typedef vector<string> VS;
+  typedef pair<int, LL> ILL;
+char *lltoa(LL x)
+{
+  static char ib[20];
+  char s = x < 0? (x *= -1, 1): 0, *i = ib;
+  for ( ; x; x /= 10) *i++ = x%10+'0';
+  if (s) *i++ = '-';
+  for (int j = 0, l = _sl(ib); j < l/2; j++)
+    swap(ib[j], ib[l-j-1]);
+  return ib;
+}
 }
 using namespace dwylkz;
 namespace graph {
@@ -101,7 +114,28 @@ namespace graph {
 using namespace graph;
 
 int n, k;
+
 VLL p;
+#define _show(x) _flpt("\t", __i, 0, k, "%lld ", _gb(x, __i));
+LL ltt(LL x, LL t = 0)
+{
+  _fl(j, (t = 0), k) {
+    LL o = 0;
+    for ( ; !(x%p[j]); x /= p[j]) o++;
+    t = _sb(t, j, o%3);
+  }
+  return t;
+}
+LL tba(LL lhs, LL rhs)
+{
+  _fl(i, 0, k) lhs = _sb(lhs, i, (_gb(lhs, i)+_gb(rhs, i))%3);
+  return lhs;
+}
+LL tne(LL x, LL rv = 0)
+{
+  _fl(i, 0, k) rv = _sb(rv, i, (3-_gb(x, i))%3);
+  return rv;
+}
 
 VI vis;
 int heart;
@@ -128,21 +162,44 @@ void dfs_heart(int u = 0, int f = -1)
   if (V[heart].b > V[u].b) heart = u;
   vis[u] = 0;
 }
-int count(int u, int d)
+VLL dis;
+void dfs_dis(int u, LL d)
 {
-  int rv = 0;
-  return rv;
+  LL sum = tba(V[u].p, d);
+#if 0
+  _pt("\tin %d\n", u);
+  _flpt("\tlhs\t", j, 0, k, "%lld ", _gb(d, j));
+  _flpt("\trhs\t", j, 0, k, "%lld ", _gb(V[u].p, j));
+  _flpt("\tsum\t", j, 0, k, "%lld%c", _gb(sum, j), j<k-1? ' ': '\n');
+#endif
+  dis._pub(sum);
+  vis[u] = 1;
+  _efl(i, u, L, E) if (!vis[E[i].v])
+    dfs_dis(E[i].v, sum);
+  vis[u] = 0;
 }
 int dac(int u = 0)
 {
-  int rv = 0;
   dfs_size(heart = u);
   dfs_heart(u);
-  u = heart;
-  rv += count(u, 0);
+  int rv = !V[u = heart].p;
+  MLLI com;
+  com[0]++;
   vis[u] = 1;
-  _efl(i, u, L, E) if (!vis[E[i].v])
-    rv += dac(E[i].v) - count(E[i].v, 0);
+  _efl(i, u, L, E) if (!vis[E[i].v]) {
+    dis.clear();
+    dfs_dis(E[i].v, 0);
+    _fl(j, 0, _sz(dis)) {
+      _it(MLLI) it = com.find(tne(tba(dis[j], V[u].p)));
+      if (it == com.end()) continue;
+      rv += it->second;
+    }
+    _fl(j, 0, _sz(dis)) com[dis[j]]++;
+  }
+#if 0
+  _pt("get heart %d rv = %d\n", u, rv);
+#endif
+  _efl(i, u, L, E) if (!vis[E[i].v]) rv += dac(E[i].v);
   vis[u] = 0;
   return rv;
 }
@@ -152,30 +209,22 @@ int main()
 #if 1
   freopen("input.in", "r", stdin);
 #endif
+  char ib[20];
   for ( ; ~scanf("%d", &n); ) {
     init(n);
-    int pn;
-    scanf("%d", &pn);
-    p.resize(pn);
-    _fl(i, 0, pn) scanf("%lld", &p[i]);
-    _fl(i, 0, n) {
-      LL v, t = 0;
-      scanf("%lld", &v);
-      _fl(j, 0, pn) {
-        int o = 0;
-        for ( ; v%p[j] == 0; v /= p[j]) o++;
-        t |= _ls(o%3, j);
-      }
-      V[i].p = t;
+    scanf("%d", &k);
+    _fl(i, (p.clear(), 0), k) {
+      scanf("%s", ib);
+      p._pub(atoll(ib));
     }
-#if 0
-    _fl(i, 0, n) _flpt("\t", j, 0, pn, "%lld%c", _gb(V[i].p, j), j<pn-1? ' ': '\n');
-#endif
+    _fl(i, 0, n) {
+      scanf("%s", ib);
+      V[i].p = ltt(atoll(ib));
+    }
     _fl(i, 0, n-1) {
       int u, v;
       scanf("%d%d", &u, &v);
-      u--, v--;
-      add(u, v);
+      add(--u, --v);
       add(v, u);
     }
     vis = VI(n, 0);
