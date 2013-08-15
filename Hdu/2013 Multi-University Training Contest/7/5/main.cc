@@ -71,6 +71,7 @@ namespace dwylkz {
   typedef vector<LL> VLL;
   typedef vector<string> VS;
   typedef pair<int, LL> ILL;
+  typedef pair<int, int> II;
 char *lltoa(LL x)
 {
   static char ib[20];
@@ -90,7 +91,6 @@ namespace graph {
     int v, to;
   };
   struct vertice {
-    int sz, b;
     LL p;
   };
   typedef vector<vertice> VV;
@@ -114,8 +114,9 @@ namespace graph {
 using namespace graph;
 
 int n, k;
+VI eban;
 
-VLL p;
+LL p[32];
 #define _show(x) _flpt("\t", __i, 0, k, "%lld ", _gb(x, __i));
 LL ltt(LL x, LL t = 0)
 {
@@ -137,70 +138,68 @@ LL tne(LL x, LL rv = 0)
   return rv;
 }
 
-VI vis;
-int heart;
-int dfs_size(int u = 0)
+int find_core(int u = 0)
 {
-  vis[u] = V[u].sz = 1;
-  _efl(i, u, L, E) if (!vis[E[i].v]) 
-    V[u].sz += dfs_size(E[i].v);
-  vis[u] = 0;
-  return V[u].sz;
-}
-void dfs_heart(int u = 0, int f = -1)
-{
-  vis[u] = 1;
-  V[u].b = 0;
-  if (f != -1) {
-    V[u].b = max(V[u].b, V[f].sz-V[u].sz);
-    V[u].sz += V[f].sz-V[u].sz;
+  VI q(1, u), f(n, -1), s(n), ban(n, 0);
+  ban[u] = 1;
+  _fl(i, 0, _sz(q)) {
+    s[u = q[i]] = 1;
+    _efl(j, u, L, E) {
+      int v = E[j].v;
+      if (eban[j] || ban[v]) continue;
+      f[v] = u;
+      q._pub(v);
+      ban[v] = 1;
+    }
   }
-  _efl(i, u, L, E) if (!vis[E[i].v]) {
-    V[u].b = max(V[u].b, V[E[i].v].sz);
-    dfs_heart(E[i].v, u);
+  _rfl(i, _sz(q), 0) {
+    int sw = 1;
+    u = q[i];
+    _efl(j, u, L, E) {
+      int v = E[j].v;
+      if (f[v] == u) {
+        s[u] += s[v];
+        if (s[v] > _sz(q)/2) sw = 0;
+      }
+    }
+    if (sw && _sz(q)-s[u] <= _sz(q)/2) break;
   }
-  if (V[heart].b > V[u].b) heart = u;
-  vis[u] = 0;
+  return u;
 }
-VLL dis;
-void dfs_dis(int u, LL d)
+void get_dis(int u, VLL &d)
 {
-  LL sum = tba(V[u].p, d);
-#if 0
-  _pt("\tin %d\n", u);
-  _flpt("\tlhs\t", j, 0, k, "%lld ", _gb(d, j));
-  _flpt("\trhs\t", j, 0, k, "%lld ", _gb(V[u].p, j));
-  _flpt("\tsum\t", j, 0, k, "%lld%c", _gb(sum, j), j<k-1? ' ': '\n');
-#endif
-  dis._pub(sum);
-  vis[u] = 1;
-  _efl(i, u, L, E) if (!vis[E[i].v])
-    dfs_dis(E[i].v, sum);
-  vis[u] = 0;
+  VI q(1, u), ban(n, 0);
+  ban[u] = 1;
+  d[u] = V[u].p;
+  _fl(i, 0, _sz(q)) {
+    u = q[i];
+    _efl(j, u, L, E) {
+      int v = E[i].v;
+      if (eban[j] || ban[v]) continue;
+      d[v] = tba(d[u], V[v].p);
+      q._pub(v);
+      ban[v] = 1;
+    }
+  }
 }
 int dac(int u = 0)
 {
-  dfs_size(heart = u);
-  dfs_heart(u);
-  int rv = !V[u = heart].p;
-  MLLI com;
-  com[0]++;
-  vis[u] = 1;
-  _efl(i, u, L, E) if (!vis[E[i].v]) {
-    dis.clear();
-    dfs_dis(E[i].v, 0);
-    _fl(j, 0, _sz(dis)) {
-      _it(MLLI) it = com.find(tne(tba(dis[j], V[u].p)));
-      if (it == com.end()) continue;
-      rv += it->second;
-    }
-    _fl(j, 0, _sz(dis)) com[dis[j]]++;
-  }
+  int rv = !V[u = find_core(u)].p;
 #if 0
-  _pt("get heart %d rv = %d\n", u, rv);
+  _pt("get core %d\n", u);
 #endif
-  _efl(i, u, L, E) if (!vis[E[i].v]) rv += dac(E[i].v);
-  vis[u] = 0;
+  MLLI sum;
+  sum[0]++;
+  _efl(i, u, L, E) if (!eban[i]) {
+    VLL dis(n);
+//     get_dis(E[i].v, dis);
+    _fl(j, 0, _sz(dis)) {
+      _it(MLLI) it = sum.find(tne(tba(V[u].p, dis[j])));
+      if (it != sum.end()) rv += it->second;
+    }
+    _fl(j, 0, _sz(dis)) sum[dis[j]]++;
+  }
+//   _efl(i, u, L, E) if (tban[i] == tme) rv += dac(E[i].v);
   return rv;
 }
 
@@ -213,9 +212,9 @@ int main()
   for ( ; ~scanf("%d", &n); ) {
     init(n);
     scanf("%d", &k);
-    _fl(i, (p.clear(), 0), k) {
+    _fl(i, 0, k) {
       scanf("%s", ib);
-      p._pub(atoll(ib));
+      p[i] = atoll(ib);
     }
     _fl(i, 0, n) {
       scanf("%s", ib);
@@ -227,7 +226,7 @@ int main()
       add(--u, --v);
       add(v, u);
     }
-    vis = VI(n, 0);
+    eban = VI(_sz(E), 0);
     printf("%d\n", dac());
   }
   return 0;

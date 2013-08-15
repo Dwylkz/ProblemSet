@@ -120,6 +120,39 @@ void dfs_heart(int u = 0, int p = -1)
   if (V[mx].b > V[u].b) mx = u;
 }
 
+pair<int, int> find_core(int u = 0)
+{
+  VI q(1, u), f(n, -1), s(n), ban(n, 0);
+  ban[u] = 1;
+  _fl(i, 0, _sz(q)) {
+    s[u = q[i]] = 1;
+    _efl(j, u, L, E) {
+      int v = E[j].v;
+      if (ban[v]) continue;
+      f[v] = u;
+      q._pub(v);
+      ban[v] = 1;
+    }
+  }
+  int b = 0;
+  _rfl(i, _sz(q), 0) {
+    int sw = 1;
+    b = 0;
+    u = q[i];
+    _efl(j, u, L, E) {
+      int v = E[j].v;
+      if (f[v] == u) {
+        s[u] += s[v];
+        b = max(b, s[v]);
+        if (s[v] > _sz(q)/2) sw = 0;
+      }
+    }
+    b = max(b, _sz(q)-s[u]);
+    if (sw && _sz(q)-s[u] <= _sz(q)/2) break;
+  }
+  return make_pair(u, b);
+}
+
 int main()
 {
 #if 1
@@ -136,10 +169,8 @@ int main()
       add(u, v);
       add(v, u);
     }
-    mx = 0;
-    dfs_size();
-    dfs_heart();
-    printf("%d %d\n", mx+1, V[mx].b);
+    pair<int, int> p = find_core();
+    printf("%d %d\n", p.first+1, p.second);
   }
   return 0;
 }
