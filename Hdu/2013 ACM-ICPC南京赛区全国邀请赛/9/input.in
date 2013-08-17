@@ -1,0 +1,53 @@
+3
+19
+Errmsg ON
+$d=""
+Errmsg = "100   0"
+Dump $d
+
+Print Errmsg
+Dump Errmsg
+$a = 1
+$b =  2
+$c     = 3
+Print $a
+Print $d
+Dump $c
+Errmsg OFF
+Print $_
+Print OK
+Panic
+Errmsg ON
+Print A
+14
+Errmsg ON
+$A = 3
+$B = 5
+Print $a
+Print $B
+A = 5
+A = 10
+Print A
+Errmsg OFF
+B = ""
+B = "A"
+Dump B
+Dump C
+Dump C
+
+15
+Errmsg ON
+$A = 3
+$B = 5
+Print $a
+Print $B
+A = 5
+A = 10
+Print A
+Errmsg OFF
+B = ""
+B = "A"
+Dump B
+Dump C
+Errmsg ON
+Dump C
