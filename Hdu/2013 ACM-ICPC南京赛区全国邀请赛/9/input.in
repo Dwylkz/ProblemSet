@@ -1,15 +1,20 @@
 3
-19
+24
 Errmsg ON
-$d=""
+		 $d =  	""
 Errmsg = "100   0"
 Dump $d
+Print d
 
 Print Errmsg
-Dump Errmsg
-$a = 1
-$b =  2
-$c     = 3
+Print Errmsg
+	  Dump Errmsg
+$a=     00001
+Dump $a
+$a="hahaha"
+Dump $a
+$b=2
+$c     =   0000000 
 Print $a
 Print $d
 Dump $c
@@ -22,7 +27,7 @@ Print A
 14
 Errmsg ON
 $A = 3
-$B = 5
+$B = 000005
 Print $a
 Print $B
 A = 5
@@ -35,7 +40,7 @@ Dump B
 Dump C
 Dump C
 
-15
+16
 Errmsg ON
 $A = 3
 $B = 5
@@ -51,3 +56,4 @@ Dump B
 Dump C
 Errmsg ON
 Dump C
+Print C
