@@ -40,6 +40,3 @@ public:
 		return p;
 	}
 };
-
-
-// Powered by FileEdit
