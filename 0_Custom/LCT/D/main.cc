@@ -42,7 +42,6 @@ struct lct_t {
     for ( ; !root(); ) 
       if (p->root()) rotate();
       else {
-        p->p->push();
         if (which() == p->which()) p->rotate();
         else rotate();
         rotate();
@@ -64,11 +63,11 @@ lct_t *make() {
 }
 lct_t *access(lct_t *x) {
   for (lct_t *y = x, *z = 0; y; z = y, y = y->p)
-    y->splay()->sets(1, z);
+    y->splay()->push()->sets(1, z);
   return x->splay();
 }
 lct_t *join(lct_t *x, lct_t *y) {
-  return access(x)->p = y;
+  return x->p = y;
 }
 lct_t *cut(lct_t *x) {
   if (access(x)->s[0]) x->s[0]->p = 0;
@@ -76,7 +75,7 @@ lct_t *cut(lct_t *x) {
   return x;
 }
 lct_t *find(lct_t *x) {
-  return access(x)->end(0)->splay();
+  return access(x)->end(0);
 }
 lct_t *rooting(lct_t *x) {
   return access(x)->set();
@@ -96,8 +95,9 @@ int main() {
       char op[20];
       int x, y;
       scanf("%s%d%d", op, &x, &y);
-      if (op[0] == 'Q') puts(find(rt[x]) == find(rt[y])? "Yes": "No");
-      else if (op[0] == 'D') {
+      if (op[0] == 'Q') {
+        puts(find(rt[x]) == find(rt[y])? "Yes": "No");
+      } else if (op[0] == 'D') {
         rooting(rt[x]);
         cut(rt[y]);
       } else join(rooting(rt[x]), rt[y]);
