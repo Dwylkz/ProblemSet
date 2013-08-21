@@ -13,11 +13,9 @@ const int MAXN = 42;
 struct Matching {
   deque<int> Q;  
   int n;
-  //g[i][j]存放关系图：i,j是否有边,match[i]存放i所匹配的点  
   bool g[MAXN][MAXN],inque[MAXN],inblossom[MAXN];  
   int match[MAXN],pre[MAXN],base[MAXN];  
 
-  //找公共祖先  
   int findancestor(int u,int v){  
     bool inpath[MAXN]={false};  
     while(1){  
@@ -32,8 +30,6 @@ struct Matching {
       v=pre[match[v]];  
     }  
   }  
-
-  //压缩花  
   void reset(int u,int anc){  
     while(u!=anc){  
       int v=match[u];  
@@ -44,7 +40,6 @@ struct Matching {
       u=v;  
     }  
   }  
-
   void contract(int u,int v,int n){  
     int anc=findancestor(u,v);  
     //SET(inblossom,0);  
@@ -61,7 +56,6 @@ struct Matching {
         }  
       }  
   }  
-
   bool dfs(int S,int n){  
     for(int i=0;i<=n;i++)pre[i]=-1,inque[i]=0,base[i]=i;  
     Q.clear();Q.push_back(S);inque[S]=1;  
@@ -90,18 +84,15 @@ struct Matching {
     }  
     return false;  
   }  
-
   void init(int n) {
     this->n = n;memset(match,-1,sizeof(match));  
-        memset(g,0,sizeof(g));  
+    memset(g,0,sizeof(g));  
   }
-
   void addEdge(int a, int b) {
     ++a;
     ++b;
     g[a][b] = g[b][a] = 1;
   }
-
   int gao() {
     int ans = 0;
     for (int i = 1; i <= n; ++i) {
@@ -139,7 +130,7 @@ int main() {
       match.init(n);
       for (int j = 0; j < m; ++j) {
         if (e[j].first != a && e[j].first != b &&
-          e[j].second != a && e[j].second != b) {
+            e[j].second != a && e[j].second != b) {
           match.addEdge(e[j].first, e[j].second);
         }
       }

@@ -26,7 +26,7 @@ using namespace graph;
 namespace lct {
   struct lct_t {
     lct_t *s[2], *p;
-    int rev, w, mx;
+    int rev, w, mx, at;
     lct_t *sets(int b, lct_t *x) {
       if (s[b] = x) x->p = this;
       return this;
@@ -42,18 +42,29 @@ namespace lct {
       rev ^= 1;
       return this;
     }
-    lct_t *update() {
-      mx = w;
-      for (int i = 0; i < 2; i++)
-        mx = max(mx, s[i]->mx);
+    lct_t *cover(int d) {
+      w += d;
+      mx += d;
+      at += d;
       return this;
     }
     lct_t *push() {
+      if (at) {
+        for (int i = 0; i < 2; i++)
+          if (s[i]) s[i]->cover(at);
+        at = 0;
+      }
       if (rev) {
         for (int i = 0; i < 2; i++)
           if (s[i]) s[i]->set();
         rev = 0;
       }
+      return this;
+    }
+    lct_t *update() {
+      mx = w;
+      for (int i = 0; i < 2; i++)
+        if (s[i]) mx = max(mx, s[i]->mx);
       return this;
     }
     lct_t *rotate() {
@@ -87,9 +98,18 @@ namespace lct {
     *top = (lct_t){{0, 0}, 0, w, w};
     return top++;
   }
-  lct_t *access(lct_t *x) {
-    for (lct_t *y = x, *z = 0; y; z = y, y = y->p)
-      y->splay()->push()->sets(1, z)->update();
+  lct_t *access(lct_t *x, int o = 0, int w = 0) {
+    for (lct_t *y = x, *z = 0; y; z = y, y = y->p) {
+      y->splay()->push();
+      if (o) {
+        if (!y->end(0)->p) {
+          if (o&1) {
+          } else {
+          }
+        }
+      }
+      y->sets(1, z)->update();
+    }
     return x->splay();
   }
   lct_t *join(lct_t *x, lct_t *y) {
@@ -105,6 +125,15 @@ namespace lct {
   }
   lct_t *rooting(lct_t *x) {
     return access(x)->set();
+  }
+  lct_t *cover(lct_t *x, lct_t *y, int w) {
+    access(x);
+    access(y, 1, w);
+    return x;
+  }
+  int ask(lct_t *x, lct_t *y) {
+    access(x);
+    return 0;
   }
 }
 using namespace lct;
@@ -135,15 +164,30 @@ int main() {
     lct::init();
     dfs(1);
     scanf("%d", &m);
-    for ( ; m--; ) {
+    for (int i = 0; i < m; i++) {
+#if 0
+      fprintf(stderr, "m = %d\n", i);
+#endif
       int op, x, y;
       scanf("%d%d%d", &op, &x, &y);
       if (op == 1) {
+        if (find(rt[x]) == find(rt[y])) continue;
+        join(rooting(rt[x]), rt[y]);
       } else if (op == 2) {
+        if (x == y || find(rt[x]) != find(rt[y])) continue;
+        rooting(rt[x]);
+        cut(rt[y]);
       } else if (op == 4) {
+        if (find(rt[x]) != find(rt[y])) {
+          puts("-1");
+          continue;
+        }
+        printf("%d\n", ask(rt[x], rt[y]));
       } else {
         int z;
         scanf("%d", &z);
+        if (find(rt[y]) != find(rt[z])) continue;
+        cover(rt[y], rt[z], x);
       }
     }
   }
