@@ -18,6 +18,7 @@ struct lct_t {
     return p->s[1] == this;
   }
   lct_t *set() {
+    swap(s[0], s[1]);
     rev ^= 1;
     return this;
   }
@@ -25,7 +26,6 @@ struct lct_t {
     if (rev) {
       for (int i = 0; i < 2; i++)
         if (s[i]) s[i]->set();
-      swap(s[0], s[1]);
       rev = 0;
     }
     return this;
@@ -39,7 +39,7 @@ struct lct_t {
     return sets(!b, y);
   }
   lct_t *splay() {
-    for (push(); !root(); ) 
+    for ( ; !root(); ) 
       if (p->root()) rotate();
       else {
         p->p->push();
@@ -68,7 +68,7 @@ lct_t *access(lct_t *x) {
   return x->splay();
 }
 lct_t *join(lct_t *x, lct_t *y) {
-  return x->p = y;
+  return access(x)->p = y;
 }
 lct_t *cut(lct_t *x) {
   if (access(x)->s[0]) x->s[0]->p = 0;
