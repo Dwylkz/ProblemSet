@@ -24,10 +24,10 @@ namespace graph {
 }
 using namespace graph;
 namespace lct {
-  struct lct_t {
-    lct_t *s[2], *p;
+  struct node {
+    node *s[2], *p;
     int rev, w, mx, at;
-    lct_t *sets(int b, lct_t *x) {
+    node *sets(int b, node *x) {
       if (s[b] = x) x->p = this;
       return this;
     }
@@ -37,18 +37,18 @@ namespace lct {
     bool which() {
       return p->s[1] == this;
     }
-    lct_t *set() {
+    node *set() {
       swap(s[0], s[1]);
       rev ^= 1;
       return this;
     }
-    lct_t *cover(int d) {
+    node *cover(int d) {
       w += d;
       mx += d;
       at += d;
       return this;
     }
-    lct_t *push() {
+    node *push() {
       if (at) {
         for (int i = 0; i < 2; i++)
           if (s[i]) s[i]->cover(at);
@@ -61,21 +61,21 @@ namespace lct {
       }
       return this;
     }
-    lct_t *update() {
+    node *update() {
       mx = w;
       for (int i = 0; i < 2; i++)
         if (s[i]) mx = max(mx, s[i]->mx);
       return this;
     }
-    lct_t *rotate() {
-      lct_t *y = p->push();
+    node *rotate() {
+      node *y = p->push();
       int b = push()->which();
       y->sets(b, s[!b])->update();
       if (y->root()) p = y->p;
       else y->p->sets(y->which(), this);
       return sets(!b, y);
     }
-    lct_t *splay() {
+    node *splay() {
       for ( ; !root(); ) 
         if (p->root()) rotate();
         else {
@@ -85,8 +85,8 @@ namespace lct {
         }
       return update();
     }
-    lct_t *end(int b) {
-      lct_t *x = this;
+    node *end(int b) {
+      node *x = this;
       for ( ; x->push()->s[b]; x = x->s[b]) ;
       return x;
     }
@@ -94,52 +94,59 @@ namespace lct {
   void init() {
     top = lct;
   }
-  lct_t *make(int w) {
-    *top = (lct_t){{0, 0}, 0, w, w};
+  node *make(int w) {
+    *top = (node){{0, 0}, 0, w, w};
     return top++;
   }
-  lct_t *access(lct_t *x, int o = 0, int w = 0) {
-    for (lct_t *y = x, *z = 0; y; z = y, y = y->p) {
+  node *access(node *x, int o = 0, int d = 0) {
+    static node rv;
+    for (node *y = x, *z = 0; y; z = y, y = y->p) {
       y->splay()->push();
-      if (o) {
-        if (!y->end(0)->p) {
-          if (o&1) {
-          } else {
-          }
+      if (!y->p) {
+        if (o == 1) {
+          y->w += d;
+          if (y->s[1]) y->s[1]->cover(d);
+          if (z) z->cover(d);
+        } else if (o == 2) {
+          int mx = y->w;
+          if (y->s[1]) mx = max(mx, y->s[1]->mx);
+          if (z) mx = max(mx, z->mx);
+          rv.mx = mx;
+          return &rv;
         }
       }
       y->sets(1, z)->update();
     }
     return x->splay();
   }
-  lct_t *join(lct_t *x, lct_t *y) {
+  node *join(node *x, node *y) {
     return x->p = y;
   }
-  lct_t *cut(lct_t *x) {
+  node *cut(node *x) {
     if (access(x)->s[0]) x->s[0]->p = 0;
     x->s[0] = 0;
     return x;
   }
-  lct_t *find(lct_t *x) {
+  node *find(node *x) {
     return access(x)->end(0);
   }
-  lct_t *rooting(lct_t *x) {
+  node *rooting(node *x) {
     return access(x)->set();
   }
-  lct_t *cover(lct_t *x, lct_t *y, int w) {
+  node *cover(node *x, node *y, int w) {
     access(x);
     access(y, 1, w);
     return x;
   }
-  int ask(lct_t *x, lct_t *y) {
+  int ask(node *x, node *y) {
     access(x);
-    return 0;
+    return access(y, 2)->mx;
   }
 }
 using namespace lct;
 
 int n, m, w[N];
-lct_t *rt[N];
+node *rt[N];
 
 void dfs(int u, int p = -1) {
   rt[u] = make(w[u]);
@@ -165,31 +172,38 @@ int main() {
     dfs(1);
     scanf("%d", &m);
     for (int i = 0; i < m; i++) {
-#if 0
-      fprintf(stderr, "m = %d\n", i);
-#endif
       int op, x, y;
       scanf("%d%d%d", &op, &x, &y);
       if (op == 1) {
-        if (find(rt[x]) == find(rt[y])) continue;
+        if (find(rt[x]) == find(rt[y])) {
+          puts("-1");
+          continue;
+        }
         join(rooting(rt[x]), rt[y]);
       } else if (op == 2) {
-        if (x == y || find(rt[x]) != find(rt[y])) continue;
+        if (x == y || find(rt[x]) != find(rt[y])) {
+          puts("-1");
+          continue;
+        }
         rooting(rt[x]);
         cut(rt[y]);
+      } else if (op == 3) {
+        int z;
+        scanf("%d", &z);
+        if (find(rt[y]) != find(rt[z])) {
+          puts("-1");
+          continue;
+        }
+        cover(rt[y], rt[z], x);
       } else if (op == 4) {
         if (find(rt[x]) != find(rt[y])) {
           puts("-1");
           continue;
         }
         printf("%d\n", ask(rt[x], rt[y]));
-      } else {
-        int z;
-        scanf("%d", &z);
-        if (find(rt[y]) != find(rt[z])) continue;
-        cover(rt[y], rt[z], x);
       }
     }
+    puts("");
   }
   return 0;
 }
