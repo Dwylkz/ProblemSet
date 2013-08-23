@@ -1,0 +1,25 @@
+【HDU】
+2255	奔小康赚大钱
+1533	Going Home
+1853	Cyclic Tour
+3488	Tour
+3435	A new Graph Game
+2426	Interesting Housing Problem
+2853	Assignment
+3718	Similarity
+3722	Card Game
+3395	Special Fish
+2282	Chocolate
+2813	One fihgt one
+2448	Mining Station on the Sea
+3315	My Brute
+3523	Image copy detection
+
+
+【POJ】
+2195 	Going Home 最小权值匹配
+2400 	Supervisor, Supervisee 输出所有最小权匹配
+2516 	Minimum Cost 最小权值匹配或最小费用流
+3565	Ants
+3686 	The Windy's 最小权值匹配
+

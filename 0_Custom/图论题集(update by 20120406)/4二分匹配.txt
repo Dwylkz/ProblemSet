@@ -1,0 +1,64 @@
+普通匹配,多重匹配
+
+【HDU】
+
+1068	Girls and Boys
+1150	Machine Schedule
+1151	Air Raid
+1179	Ollivanders: Makers of Fine Wands since 382 BC.
+1281	棋盘游戏
+1498	50 years, 50 colors
+1507	Uncle Tom's Inherited Land*
+1528	Card Game Cheater
+1845	Jimmy’s Assignment
+2063	过山车
+2119	Matrix
+2444	The Accomodation of Students
+2768	Cat vs. Dog
+3081	Marriage Match II
+3360	National Treasures
+1045	也可搜索
+1350	最小路径覆盖
+3118	类似二分匹配
+3729
+2389
+1054
+2819	完全匹配
+1668 	二分+多重匹配
+3605	多重匹配
+3861	强连通+二分匹配
+2236	无题II
+
+hdu3468
+hdu4185	奇偶匹配
+
+【POJ】
+1087	A Plug for UNIX
+1274 	The Perfect Stall
+1469	COURSES
+1486 	Sorting Slides 二分图的必须边
+1548	Robots
+1698	Alice's Chance
+1719	Shooting Contest
+1904 	King's Quest 求二分图所有可能的匹配边
+2060 	Taxi Cab Scheme 最小路径覆盖
+2112 	Optimal Milking 二分+多重匹配
+2226 	Muddy Fields 行列的覆盖
+2239 	Selecting Courses
+2289 	Jamie's Contact Groups 二分+多重匹配
+2446 	Chessboard
+2536 	Gopher II
+2584	T-Shirt Gumbo
+2594 	Treasure Exploration 可相交最小路径覆盖
+2672	Hotkeys
+2724 	Purifying Machine
+3020 	Antenna Placement
+3041 	Asteroids 简单行列匹配 
+3189	Steady Cow Assignment 二分+多重匹配
+3207 	Ikki's Story IV - Panda's Trick
+3216 	Repairing Company
+3343 	Against Mammoths
+3692 	Kindergarten
+
+
+poj2771	最大独立集

@@ -1,0 +1,53 @@
+【HDU】
+强连通:
+1269  	迷宫城堡  判断是否是一个强连通
+2767	Proving Equivalences  至少加几条边让整个图变成强连通
+3836 	Equivalent Sets  至少加几条边让整个图变成强连通
+1827    Summer Holiday  传递的最小费用
+3072    Intelligence System  传递的最小费用
+3861	The King’s Problem 强连通+二分匹配
+3639	Hawk-and-Chicken  强连通缩点 + 树形dp（累加子节点的总权值）
+3594 	Cactus 仙人掌图
+
+双连通:
+2242	考研路茫茫——空调教室  双联通缩点+树形DP
+2460	Network 边双连通
+3849	By Recognizing These Guys, We Find Social Networks Useful  双连通求桥
+3896	Greatest TC  双连通
+4005 	The war  边双连通
+
+LCA:
+2586	How far away ？
+2874	Connections between cities
+3078	Network  LCA+排序
+3830	Checkers  二分+LCA
+
+
+【POJ】
+强连通:
+1236	Network of Schools
+2553 	The Bottom of a Graph  好题！ 找出度为0的集合
+2186    Popular Cows  好题！ 找出度为0的，其他分量都指向它的集合
+2375	Cow Ski Area 强连通
+2762    Going from u to v or from v to u?  缩点+拓扑排序
+3160   	Father Christmas flymouse  强连通+最短路
+3180 	The Cow Prom  判断有几个环， 分量中元素大于1的个数
+3114	Countries in War  强连通+最短路
+3592	Instantaneous Transference  强连通分量+最长路
+1904	King's Quest  强连通+并查集 
+
+双连通：
+3694 	Network  边双连通 (同hdu2460)
+3177 	Redundant Paths   构造边双连通
+3352 	Road Construction   构造边双连通
+2942 	Knights of the Round Table (点双连通经典题)
+1515 	Street Directions (无向图改有向图)
+1438 	One-way Traffic  (混合图改有向图)
+
+LCA:
+1330	Nearest Common Ancestors
+1470	Closest Common Ancestors
+1986	Distance Queries
+3417	Network
+3728	The merchant  LCA+并查集,更新询问
+2763	Housewife Wind LCA+树状数组

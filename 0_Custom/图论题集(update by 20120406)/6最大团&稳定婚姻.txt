@@ -1,0 +1,14 @@
+【HDU】
+
+1530	Maximum Clique
+1435	Stable Match
+3585	maximum shortest distance 二分+最大团
+1522	Marriage is Stable
+1914	The Stable Marriage Problem
+
+【POJ】
+
+1129	四色定理 着色问题
+1419	最大独立集
+2989	极大团
+3487 	The Stable Marriage Problem 稳定婚姻
