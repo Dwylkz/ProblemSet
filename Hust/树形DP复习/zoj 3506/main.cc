@@ -33,22 +33,28 @@ void dfs(int u) {
   int (*g)[2] = f[u];
   for (int i = 0; i <= k; i++) {
     g[i][0] = -inf;
-    g[i][1] = w[u];
+    g[i][1] = -inf;
   }
-  for (int i = L[u]; ~i; i = E[i].to) 
-    if (ra[u] != i) {
-      ra[E[i].v] = i^1;
-      dfs(E[i].v);
-      int (*h)[2] = f[E[i].v];
-      for (int j = 0; j <= k; j++) {
-        g[j][1] += h[j][1];
-        g[j][0] = max(g[j][0], h[j][0]);
-        if (j) {
-          g[j][0] = max(g[j][0], h[j-1][1]);
-          g[j][0] = max(g[j][0], h[j-1][0]);
-        }
+  g[0][1] = w[u];
+  for (int i = L[u]; ~i; i = E[i].to) {
+    if (g[1][1] == -inf) g[1][1] = w[u];
+    if (ra[u] == i) continue;
+    ra[E[i].v] = i^1;
+    dfs(E[i].v);
+    int (*h)[2] = f[E[i].v];
+    g[0][1] += h[0][1];
+    for (int j = 1; j <= k; j++) {
+      if (h[j][1] != -inf) g[j][1] += h[j][1];
+      if (h[j][0] != -inf) g[j][0] = max(g[j][0], h[j][0]);
+      else if (h[j][0] == -inf && j == 1) {
+        g[j][0] = max(g[j][0], w[E[i].v]);
+      }
+      if (j) {
+        g[j][0] = max(g[j][0], h[j-1][1]);
+        g[j][0] = max(g[j][0], h[j-1][0]);
       }
     }
+  }
 }
 
 int main() {
