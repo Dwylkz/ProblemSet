@@ -10,11 +10,17 @@ LL n;
 LL askf(int f, int g) {
   LL rv = 0;
   if (g&1) {
-  } else {
+    rv = -1;
+    for ( ; f--; ) rv *= 10;
+    rv /= 2;
+  } else if (f&1) {
+    rv = -45;
+    for ( ; --f; ) rv *= 10;
   }
-  return 0;
+  return rv;
 }
 LL askp(LL p, int f) {
+  LL rv = 0;
   return 0;
 }
 LL askn(LL n) {
