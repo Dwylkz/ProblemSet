@@ -24,7 +24,7 @@ LL askf(int g, int f) {
 }
 LL askp(LL p, int f) {
   LL rv = 0, d = 1, o = 1;
-  for (LL t = p; t > 9; t /= 10) o *= 10, d++;
+  for (LL t = p; t; t /= 10) o *= 10, d++;
   for (LL t = p, i = 0; o; t %= o, o /= 10, i ^= 1)
     if (i&1) rv -= t/o;
     else rv += t/o;
@@ -36,21 +36,18 @@ LL askp(LL p, int f) {
   return rv;
 }
 LL askn(LL n) {
-  if (n < 10) return n;
   LL rv = 0, d = 1, o = 1;
   for (LL t = n; t > 9; t /= 10) d++, o *= 10;
-  for (int i = 1; i < d; i++)
+  for (int i = 1; i < d-1; i++) {
     if (i == 1) rv -= 5;
-    else for (int j = 1; j < 10; j++)
+    for (int j = 1; j < 10; j++)
       rv += askp(j, i-1);
-  for (LL t = n, p = 0; o; p = p*10+t/o, t %= o, o /= 10, d--)
-    for (int i = p == 0? 1: 0; i < t/o; i++)
-      rv += askp(p*10+i, d-1);
-  return rv;
+  }
+  return 0;
 }
 LL check(int n) {
   LL rv = 0, r = 0;
-  for (int i = 0; i <= n; i++) {
+  for (int i = 1; i <= n; i++) {
     LL o = 1;
     for (int t = i; t > 9; t /= 10) o *= 10;
     for (int t = i; o; t %= o, o /= 10) {
@@ -66,10 +63,9 @@ int main() {
 #if 1
   freopen("input.in", "r", stdin);
 #endif
-//   int k = 202020;
-//   printf("%lld == %lld?\n", askn(k+1), check(k));
-  for ( ; ~scanf("%lld", &n), n; ) {
-    printf("%lld\n", askn(n+1));
+  printf("%lld == %lld?\n", askn(12), check(99));
+  for ( ; ~scanf("%lld", &n); ) {
+    printf("%lld\n", askn(n));
   }
   return 0;
 }

@@ -1,0 +1,26 @@
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct t_t {
+  string s;
+  int n;
+  t_t(int t) {
+  }
+};
+vector<t_t> v;
+
+int main() {
+#if 1
+  freopen("input.in", "r", stdin);
+#endif
+  for (int m, s; scanf("%2d:%2d", &m, &s); ) {
+    int t = m*60+s, l = 9*t+1, r = 11*t-1;
+    l = l/10+1+(l%10);
+    v.clear();
+  }
+  return 0;
+}
