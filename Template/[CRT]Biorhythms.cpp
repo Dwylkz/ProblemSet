@@ -2,44 +2,34 @@
 #include <vector>
 using namespace std;
 
-vector<int>A, N;
-
-int EX_GCD(int a, int b, int &x, int &y)
-{
+vector<int> A, N;
+int gcd(int a, int b, int &x, int &y) {
 	int d, tx, ty;
-	if (b == 0)
-	{
+	if (b == 0) {
 		x = 1;
 		y = 0;
 		return a;
 	}
-	d = EX_GCD(b, a % b, tx, ty);
+	d = gcd(b, a%b, tx, ty);
 	x = ty;
-	y = tx - (a / b) * ty;
+	y = tx-(a/b)*ty;
 	return d;
 }
-
-int MLE(int a, int b, int n)
-{
+int mle(int a, int b, int n) {
 	int d, x, y;
-	d = EX_GCD(a, n, x, y);
-	if (b % d == 0)
-	{
-		x = x * b / d % n;
+	d = gcd(a, n, x, y);
+	if (b%d == 0) {
+		x = x*b/d%n;
 		return x;
 	}
 	return 0;
 }
-
-int CRT()
-{
+int crt() {
 	int x = 0, n = 1, i, bi;
-	for (i = 0; i < N.size(); i++)
-		n *= N[i];
-	for (i = 0; i < A.size(); i++)
-	{
+	for (i = 0; i < N.size(); i++) n *= N[i];
+	for (i = 0; i < A.size(); i++) {
 		bi = MLE(n / N[i], 1, N[i]);
-		x = (x + A[i] * bi * (n / N[i])) % n;
+		x = (x+A[i]*bi*(n/N[i]))%n;
 	}
 	return x;
 }
