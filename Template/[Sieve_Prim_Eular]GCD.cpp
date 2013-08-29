@@ -15,8 +15,7 @@ void ini()
 {
     int i, j;
     eul[1] = 1;
-    for (i = 2; i < MAXI; i++)
-    {
+    for (i = 2; i < MAXI; i++) {
         if (eul[i] == 0)
             for (j = i; j < MAXI; j += i)
             {
