@@ -20,7 +20,7 @@ struct b2_fft_t {
     for (int i = 0; i < c.size(); i++) {
       int to = 0;
       for (int o = l>>1, t = i; o; o >>= 1, t >>= 1)
-        if (t&1) to += o;
+        if (t&1) to |= o;
       c[to] = i < x.size()? x[i]: cd_t(0., 0.);
     }
   }
