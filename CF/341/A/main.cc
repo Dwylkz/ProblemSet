@@ -21,7 +21,7 @@ int n, a[N];
 int main()
 {
 #if 1
-	freopen("input.txt", "r", stdin);
+  freopen("input.txt", "r", stdin);
 #endif
   for ( ; ~scanf("%d", &n); ) {
     for (int i = 0; i < n; i++) scanf("%d", a+i);
@@ -31,5 +31,5 @@ int main()
     LL f = gcd(sum, n);
     cout << sum/f << " " << n/f << endl;
   }
-	return 0;
+  return 0;
 }

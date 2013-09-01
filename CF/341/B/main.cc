@@ -11,17 +11,12 @@ using namespace std;
 const int N = 1<<17;
 
 int s[N<<1];
-#define _ls L, m, x<<1
-#define _rs m+1, R, x<<1|1
-void put(int x, int c) {
-  for (s[x += N] = c, x >>= 1; x; x >>= 1)
-    s[x] = max(s[x<<1], s[x<<1|1]);
+void put(int x, int y) {
+  for (s[++x] = y, x += -x&x; x < N; x += -x&x)
+    s[x] = max(s[x], y);
 }
-int ask(int l, int r, int L = 0, int R = N-1, int x = 1) {
-  if (l <= L && R <= r) return s[x];
-  int rv = 0, m = L+R>>1;
-  if (l <= m) rv = max(rv, ask(l, r, _ls));
-  if (m < r) rv = max(rv, ask(l, r, _rs));
+int ask(int x, int rv = 0) {
+  for (x++; x; x -= -x&x) rv = max(rv, s[x]);
   return rv;
 }
 
@@ -35,9 +30,9 @@ int main() {
     int res = 0;
     for (int a, i = 0; i < n; i++) {
       scanf("%d", &a);
-      int t = ask(0, a-1)+1;
+      int t = ask(a)+1;
       res = max(res, t);
-      put(a,t);
+      put(a, t);
     }
     printf("%d\n", res);
   }
