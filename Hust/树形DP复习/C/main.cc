@@ -6,7 +6,7 @@
 using namespace std;
 const int N = 1e4+10;
 const int K = 10+10;
-const int inf = 0x7fffffff;
+const int inf = 1e8+10;
 
 namespace graph {
   struct edge_t {
@@ -28,44 +28,48 @@ using namespace graph;
 
 int n, s, k; 
 
-/* dp[u][r][b] the min-cost when there is r robot start from u
- * and b robot return. */
-int dp[N][K][K], h[K][K];
-void dfs(int u, int p = -1) {
-  int (*f)[K] = dp[u];
-  memset(f, 0, sizeof(dp[0]));
+int dp[N][2][K], ra[N], h[K], l[N];
+void dfs(int u) {
+  int *fu = dp[u][0], *gu = dp[u][1], is = 1;
+  fill(fu, fu+K, 0);
+  fill(gu, gu+K, 0);
+  l[u] = 0;
   for (int e = L[u]; ~e; e = E[e].to) {
-    if (e == p) continue;
-    dfs(E[e].v, e^1);
-    int (*g)[K] = dp[E[e].v];
-    for (int r = 1; r <= k; r++)
-      for (int b = 0; b <= r; b++)
-        h[r][b] = inf;
-    for (int r = 1; r <= k; r++) {
-      for (int b = 0; b <= r; b++) {
-        for (int i = 1; i <= r; i++) {
-          for (int j = 1; j <= r; j++) {
-            int x = max(0, j-(r-i)), y = max(0, b-j), w = E[e].w;
-            // case 1: travel v after u
-            h[r][b] = min(h[r][b], f[i][x+y]+g[j][b-y]+w*(j+b-y));
-            // case 2: travel u after v
-            x = max(0, i-(r-j)), y = max(0, b-i);
-            h[r][b] = min(h[r][b], g[j][x+y]+w*(j+x+y)+f[i][b-y]);
-          } // j as the number of robot send to v.
-        } // i as the number of robot send to u.
-      } // b as the number of robot which would return.
-    } // r as the number of robot.
-    for (int r = 1; r <= k; r++)
-      for (int b = 0; b <= r; b++)
-        f[r][b] = h[r][b];
+    if (e == ra[u]) continue;
+    int v = E[e].v, w = E[e].w;
+    is = 0;
+    ra[v] = e^1;
+    dfs(v);
+    int *fv = dp[v][0], *gv = dp[v][1];
+    fill(h+1, h+K, inf<<4);
+    for (int r = k; r >= 1; r--) {
+      for (int i = min(r, l[v]); i >= 1; i--) {
+        int j = max(l[u] > 0, min(r-i, l[u])), x = max(0, j-(r-i)), y = max(0, i-(r-j));
+        // 1. u first
+        h[r] = min(h[r], fu[i]+gu[x]+j*w+fv[j]);
+        // 2. v first
+        h[r] = min(h[r], fv[j]+gv[y]+(j+y)*w+fu[i]);
+      } // i = robot send to v
+    } // r = robot amount
+    memcpy(fu, h, sizeof(h));
+    fill(h+1, h+K, inf<<4);
+    for (int b = 1; b <= k; b++) {
+      for (int i = min(l[u], b); i >= 0; i--) {
+        h[b] = min(h[b], gu[i]+gv[b-i]+(b-i)*w);
+      } // i = amount of robot which return from u
+    } // b = the number of robot coming back
+    memcpy(gu, h, sizeof(h));
+    l[u] += l[v];
   }
-#if 0
-  printf("in %d\n", u);
-  for (int r = 1; r <= k; r++) {
-    printf("use %4d: ", r);
-    for (int b = 0; b <= r; b++)
-      printf("%4d%c", dp[u][r][b], b < r? ' ': '\n');
-  }
+  l[u] += is;
+#if 1
+  printf("out %d l = %d:\n", u, l[u]);
+  printf("f: ");
+  for (int i = 0; i <= k; i++) printf("%4d", fu[i] == inf? -1: fu[i]);
+  puts("");
+  printf("g: ");
+  for (int i = 0; i <= k; i++) printf("%4d", gu[i] == inf? -1: gu[i]);
+  puts("\n");
 #endif
 }
 
@@ -81,8 +85,9 @@ int main() {
       add(--u, --v, w);
       add(v, u, w);
     }
+    memset(ra, -1, sizeof(ra));
     dfs(--s);
-    printf("%d\n", dp[s][k][0]);
+    printf("%d\n", dp[s][0][k]);
   }
   return 0;
 }
