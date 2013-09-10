@@ -28,28 +28,21 @@ int n;
 int f[N];
 int bfs(int rt) {
   vector<int> q(1, rt), r(n, -1);
-  for (int h = 0; h < q.size(); h++) {
-    int u = q[h];
-    for (int e = L[u]; ~e; e = E[e].to) {
-      if (e == r[u]) continue;
-      int v = E[e].v;
-      r[v] = e^1;
-      q._pb(v);
-    }
-  }
+  for (int h = 0; h < q.size(); h++)
+    for (int e = L[q[h]]; ~e; e = E[e].to) 
+      if (e != r[q[h]]) r[E[e].v] = e^1, q._pb(E[e].v);
+  int rv = 0;
   for (int h = q.size()-1; h >= 0; h--) {
-    int u = q[h], ec = 0;
-    f[u] = 0;
-    for (int e = L[u]; ~e; e = E[e].to) {
-      if (e == r[u]) continue;
-      int v = E[e].v;
-      f[u] += f[v];
-      ec++;
-    }
-    if (u == rt) f[u] += max(0, ec-2);
-    else f[u] += max(0, ec-1);
+    int u = q[h], ec = f[u] = 0;
+    for (int e = L[u]; ~e; e = E[e].to)
+      if (e != r[u]) ec += f[E[e].v];
+    if (ec > 1) {
+      if (u == rt) rv += ec-2;
+      else rv += ec-1;
+      f[u] = 0;
+    } else f[u] = 1;
   }
-  return f[rt]<<1|1;
+  return rv<<1|1;
 }
 
 int main() {
@@ -63,9 +56,7 @@ int main() {
     init();
     for (int u, v, i = 0; i < n-1; i++) {
       scanf("%d%d", &u, &v);
-      v--, u--;
-      add(u, v);
-      add(v, u);
+      add(--u, --v), add(v, u);
     }
     printf("%d\n", bfs(0));
   }
