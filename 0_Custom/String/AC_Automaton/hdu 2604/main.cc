@@ -4,13 +4,14 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-const int N = 7+10;
+const int N = 6+10;
 const int M = 2;
 
 template<class T> struct aca_t {
   enum {n = N, m = M};
   struct node {
     node *s[m], *p;
+    int ac;
   } s[n], *top, *rt, *q[n];
   void init() {
     memset(top = s, 0, sizeof(s));
@@ -22,6 +23,7 @@ template<class T> struct aca_t {
       if (!x->s[k[i]]) x->s[k[i]] = top++;
       x = x->s[k[i]];
     }
+    x->ac = 1;
   }
   void link() {
     int l = 0;
@@ -35,8 +37,10 @@ template<class T> struct aca_t {
   }
   void tom(int mt[n][n]) {
     for (node *x = s; x < top; x++)
-      for (int i = 0; i < m; i++)
-        mt[x-s][x->s[i]-s] = 1;
+      for (int i = 0; i < m; i++) {
+        int k = x-s, j = x->s[i]-s;
+        if (!x->s[i]->ac) mt[k][j] = 1;
+      }
   }
 };
 
@@ -44,10 +48,6 @@ int n, m;
 aca_t<int> zkl;
 
 int mt[N][N], r, ans[N][N];
-void init() {
-  memset(ans, 0, sizeof(ans));
-  for (int i = 0; i < r; i++) ans[i][i] = 1;
-}
 void mul(int c[N][N], int a[N][N], int b[N][N], int m) {
   int t[N][N];
   for (int i = 0; i < r; i++)
@@ -58,17 +58,15 @@ void mul(int c[N][N], int a[N][N], int b[N][N], int m) {
 }
 void qmod(int b, int c) {
   int a[N][N];
+  memset(ans, 0, sizeof(ans));
   memcpy(a, mt, sizeof(mt));
-  for (init(); b; b >>= 1) {
+  for (int i = 0; i < r; i++) ans[i][i] = 1;
+  for ( ; b; b >>= 1, mul(a, a, a, c))
     if (b&1) mul(ans, a, ans, c);
-    mul(a, a, a, c);
-  }
 }
 int qmod(int a, int b, int c, int rv = 1) {
-  for ( ; b; b >>= 1) {
+  for ( ; b; b >>= 1, a = (a*a)%c)
     if (b&1) rv = (rv*a)%c;
-    a = (a*a)%c;
-  }
   return rv;
 }
 
@@ -81,23 +79,11 @@ int main() {
   zkl.put(f, 3), zkl.put(g, 3);
   zkl.link();
   zkl.tom(mt), r = zkl.top-zkl.s;
-  for (int i = 0; i < r; i++) {
-    for (int j = 0; j < r; j++)
-      mt[i+r][j] = mt[i][j];
-    mt[i+r][i+r] = 1;
-  }
-  r <<= 1;
   for ( ; ~scanf("%d%d", &n, &m); ) {
-//     m = 101;
     qmod(n, m);
-#if 1
-    printf("tot = %d\n", qmod(2, n, m));
-    for (int i = 0; i < r; i++) {
-      for (int j = 0; j < r; j++) printf(" %d", ans[i][j]);
-      puts("");
-    }
-#endif
-    printf("%d\n", (m+qmod(2, n, m)-ans[r>>1][3]-ans[r>>1][5])%m);
+    int rv = 0;
+    for (int i = 0; i < 6; i++) rv = (rv+ans[0][i])%m;
+    printf("%d\n", rv);
   }
   return 0;
 }
