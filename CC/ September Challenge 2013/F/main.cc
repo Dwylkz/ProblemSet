@@ -1,11 +1,12 @@
 #include <cstdio>
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <vector>
 using namespace std;
 const int N = 1e5+10;
-const int inf = 0x3f3f3f3f;
+const int inf = 0x7f3f3f3f;
 
 struct edge_t {
   int v, to;
@@ -40,9 +41,8 @@ struct node {
     return l+r>>1;
   }
   void set(int _tag) {
-    if (mn == inf) return ;
-    tag = _tag;
-    mn += tag;
+    tag += _tag;
+    mn += _tag;
     if (mn < 1) {
       if (l == r) {
         mn = inf;
@@ -114,6 +114,7 @@ int main() {
     init();
     for (int u, i = 1; i <= n; i++) {
       scanf("%d%d", w+i, &u);
+      assert(w[i] <= 1e9);
       add(u, i);
     }
     et(tm = 0);
@@ -137,13 +138,16 @@ int main() {
 #endif
     build(0, tm-1, top = seg);
     scanf("%d", &q);
+    assert(q <= 1e5);
     for (int op, a, x; q--; ) {
 #if 0
       show();
 #endif
       scanf("%d%d", &op, &a);
+      assert(0 <= a && a <= n);
       if (op == 1) {
         scanf("%d", &x);
+        assert(1 <= x && x <= 1e4);
         if (lb[a]+1 < rb[a])
           draw(lb[a]+1, rb[a]-1, -x);
       } else {
