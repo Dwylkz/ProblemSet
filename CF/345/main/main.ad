@@ -1,0 +1,10 @@
+with Ada.Integer_Text_IO;
+use Ada.Integer_Text_IO;
+
+procedure main is
+    A, B: Real;
+begin
+    Get(Item => A);
+    Get(Item => B);
+    Put(Item => A + B, Width => 1);
+end main;
