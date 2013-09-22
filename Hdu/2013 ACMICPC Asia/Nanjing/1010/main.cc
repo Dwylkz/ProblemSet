@@ -25,7 +25,7 @@ struct trie_t {
   struct node {
     node *s[2];
     int c[2];
-  } s[17*N*2], *top, *nil;
+  } s[(1<<16)+16*N], *top, *nil;
   void init() {
     top = s;
     nil = phi();
