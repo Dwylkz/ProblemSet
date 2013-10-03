@@ -23,8 +23,6 @@ void add(int u, int v) {
   E.push_back(t);
 }
 
-int n, a[N];
-
 LL gcd(LL a, LL b) {
   return b? gcd(b, a%b): a;
 }
@@ -32,74 +30,40 @@ LL lcm(LL a, LL b) {
   return a/gcd(a, b)*b;
 }
 
-struct dfs_c {
-  int *a, e, v, ra[N], bc;
-  LL rv, w[N], c[N], lb, mb, rb, mn;
-  bool look(int u, int k) {
-    for (e = L[u]; ~e; e = E[e].to) if (e != ra[u]) {
-      v = E[e].v;
-      if ((w[v]-k)%c[v]) return 0;
-    }
-    return 1;
+int n, a[N];
+
+LL weight[N], delta[N];
+void dfs(int u, int p = -1) {
+  int branch = 0;
+  delta[u] = 1;
+  for (int e = L[u]; ~e; e = E[e].to) if (e != p) {
+    int v = E[e].v;
+    branch++;
+    dfs(v, e^1);
+    delta[u] = lcm(delta[u], delta[v]);
   }
-  void dfs(int u) {
-    // deal reverse arc and branch counting
-    bc = 0;
-    for (e = L[u]; ~e; e = E[e].to) if (e != ra[u]) {
-      ra[E[e].v] = e^1;
-      bc++;
+  if (branch) {
+    LL minval = inf;
+    for (int e = L[u]; ~e; e = E[e].to) if (e != p) {
+      int v = E[e].v;
+      if (!delta[u]) minval = 0;
+      else minval = min(minval, weight[v]-weight[v]%delta[u]);
     }
-    // go deeper
-    for (e = L[u]; ~e; e = E[e].to) if (e != ra[u]) {
-      dfs(E[e].v);
-    }
-    // look for init right bound 
-    // deal with lcm
-    mn = inf;
-    c[u] = 1;
-    for (e = L[u]; ~e; e = E[e].to) if (e != ra[u]) {
-      v = E[e].v;
-      mn = min(mn, w[v]);
-      c[u] = lcm(c[u], c[v]);
-    }
-    // find lower bound of max minimum value
-    w[u] = a[u];
-    if (bc) {
-      for (lb = 0, rb = mn, mn = 0; lb <= rb; ) {
-        mb = lb+rb>>1;
-        if (look(u, mb)) {
-          mn = mb;
-          lb = mb+1;
-        } else rb = mb-1;
-      }
-      c[u] *= bc;
-      // deal with weight
-      for (e = L[u]; ~e; e = E[e].to) if (e != ra[u]) {
-        v = E[e].v;
-        rv += w[v]-mn;
-        w[u] += mn;
-      }
-    }
-#if 1
-    printf("in %d, ra = %d, mn = %lld, w = %lld, c = %lld\n",
-        u, ra[u], mn, w[u], c[u]);
-#endif
-  }
-  LL operator () (int u, int *_a) {
-    a = _a;
-    rv = 0;
-    ra[u] = -1;
-    dfs(u);
-    return rv;
-  }
-} dfs;
+    weight[u] = minval*branch;
+    delta[u] *= branch;
+  } else weight[u] = a[u];
+}
 
 int main() {
 #if 1
   freopen("input.in", "r", stdin);
 #endif
   for ( ; ~scanf("%d", &n); ) {
-    for (int i = 0; i < n; i++) scanf("%d", a+i);
+    LL total = 0;
+    for (int i = 0; i < n; i++) {
+      scanf("%d", a+i);
+      total += a[i];
+    }
     init();
     for (int i = 0; i < n-1; i++) {
       int u, v;
@@ -108,7 +72,8 @@ int main() {
       add(u, v);
       add(v, u);
     }
-    cout << dfs(0, a) << endl;
+    dfs(0);
+    cout << total-weight[0] << endl;
   }
   return 0;
 }
