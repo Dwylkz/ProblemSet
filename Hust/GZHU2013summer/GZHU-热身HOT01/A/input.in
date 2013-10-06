@@ -1,0 +1,16 @@
+5 13 2 4
+1 2 3 4 5
+move 2
+query
+insert 8
+reverse
+query
+add 2
+query
+move 1
+query
+move 1
+query
+delete
+query
+0 0 0 0 
