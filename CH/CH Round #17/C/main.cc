@@ -15,7 +15,7 @@ typedef pair<pair<int, int>, int> ppi_t;
  * */
 template<int N> struct graph_t {
   struct edge_t {
-    int v, to, w;
+    int v, to, w, id;
   };
   vector<edge_t> E;
   int L[N];
@@ -23,14 +23,14 @@ template<int N> struct graph_t {
     E.clear();
     memset(L, -1, sizeof(L));
   }
-  void add(int u, int v, int w) {
-    edge_t t = {v, L[u], w};
+  void add(int u, int v, int w, int id) {
+    edge_t t = {v, L[u], w, id};
     L[u] = E.size();
     E.push_back(t);
   }
-  void badd(int u, int v, int w) {
-    add(u, v, w);
-    add(v, u, 0);
+  void badd(int u, int v, int w, int id = -1) {
+    add(u, v, w, id);
+    add(v, u, 0, id);
   }
 };
 typedef graph_t<N> graph_i;
@@ -44,7 +44,7 @@ template<class edge_t, int N> struct sap_t {
     int mxf = 0, te = 0;
     memcpy(_L, L, sizeof(L));  
     memset(dis, -1, sizeof(dis));
-    memset(gap, 0, sizeof(gap));  
+    memset(gap, 0, sizeof(gap));
     gap[dis[snk] = 0] = 1;  
     vector<int> q(1, snk);
     for (int h = 0; h < q.size(); h++)
@@ -90,58 +90,46 @@ template<class edge_t, int N> struct sap_t {
 };
 typedef sap_t<edge_t, N> sap_i;
 
-template<class edge_t, int N> struct tarjan_t {
+template<class edge_t, int N> struct scc_t {
   typedef int ia_t[N];
   int time, V, *L, cc;
   ia_t dfn, low, in, pushed;
   vector<edge_t> *E;
   vector<int> st;
-  struct scc_t {
-    void dfs(int u) {
-      dfn[u] = low[u] = time++;
-      st.push_back(u);
-      pushed[u] = 1;
-      for (int e = L[u]; ~e; e = (*E)[e].to) {
-        int v = (*E)[e].v;
-        if (~dfn[v] && pushed[v])
-          low[v] = min(low[u], dfn[v]);
-        else {
-          dfs(v);
-          low[v] = min(low[u], low[v]);
-        }
-      }
-      if (dfn[u] == low[u]) {
-        for ( ; ; ) {
-          u = st.back();
-          st.pop_back();
-          in[u] = cc;
-          if (dfn[u] == low[u]) break;
-        }
-        cc++;
-      }
+  void dfs(int u) {
+    dfn[u] = low[u] = time++;
+    st.push_back(u);
+    pushed[u] = 1;
+    for (int e = L[u]; ~e; e = (*E)[e].to) {
+      int v = (*E)[e].v;
+      if (~dfn[v] && pushed[v]) low[u] = min(low[u], dfn[v]);
+      else dfs(v), low[u] = min(low[u], low[v]);
     }
-    void operator () () {
-      for (int u = 0; u < V; u++)
-        if (!~dfn[u]) dfs(u);
+    if (dfn[u] == low[u]) {
+      for ( ; ; ) {
+        u = st.back();
+        st.pop_back();
+        pushed[u] = 0;
+        in[u] = cc;
+        if (dfn[u] == low[u]) break;
+      }
+      cc++;
     }
-  } scc;
-  struct bcc_t {
-  } bcc;
-  struct lca_t {
-  } lca;
+  }
   void operator () (vector<edge_t> *_E, int *_L, int _V) {
     E = _E;
     L = _L;
     V = _V;
     for (int i = 0; i < V; i++)
-      dfn[i] = low[i] = pushed[i] = 0;
+      dfn[i] = low[i] = -1, pushed[i] = 0;
     st.clear();
     time = cc = 0;
+    for (int u = 0; u < V; u++) dfs(u);
   }
 };
-typedef tarjan_t<edge_t, N> tarjan_i;
+typedef scc_t<edge_t, N> scc_i;
 
-tarjan_i tarjan;
+scc_i scc;
 graph_i graph;
 vector<edge_t> &E = graph.E;
 int *L = graph.L;
@@ -150,16 +138,6 @@ ppi_t p[P];
 int n, m, t;
 vector<int> g[N];
 
-void build(int src, int snk) {
-  graph.init();
-  for (int i = 0; i < n; i++) graph.badd(src, i, 1);
-  for (int i = 0; i < m; i++) graph.badd(i, snk, 1);
-  for (int i = 0; i < t; i++) if (p[i]._b) {
-    int u = p[i]._x, v = p[i]._y;
-    graph.badd(u, v, 1);
-  }
-}
-
 int main() {
 #if 1
   freopen("input.in", "r", stdin);
@@ -167,23 +145,39 @@ int main() {
   for ( ; ~scanf("%d%d%d", &n, &m, &t); ) {
     for (int i = 0; i < t; i++) {
       scanf("%d%d", &p[i]._x, &p[i]._y);
-      p[i]._x--, p[i]._y--;
-      p[i]._b = 1;
+      p[i]._x -= 1;
+      p[i]._y += n-1;
+      p[i]._b = 0;
     }
     int src = n+m, snk = src+1, V = snk+1;
-    build(src, snk);
+    graph.init();
+    for (int i = 0; i < n; i++) graph.badd(src, i, 1);
+    for (int i = 0; i < m; i++) graph.badd(n+i, snk, 1);
+    for (int i = 0; i < t; i++) {
+      int u = p[i]._x, v = p[i]._y;
+      graph.badd(u, v, 1, i);
+    }
     sap(graph.E, graph.L, V, src, snk);
     for (int u = 0; u < V; u++) g[u].clear();
     for (int u = 0; u < V; u++)
-      for (int e = L[u]; ~e; e = E[e].to)
+      for (int e = L[u]; ~e; e = E[e].to) {
+        if (~E[e].id && (~e&1) && !E[e].w) p[E[e].id]._b = 1;
         if (E[e].w) g[u].push_back(E[e].v);
         else g[E[e].v].push_back(u);
+      }
     graph.init();
     for (int u = 0; u < V; u++)
       for (int i = 0; i < g[u].size(); i++)
-        graph.badd(u, g[u][i], 0);
-    tarjan(&E, L, V);
-    tarjan.scc();
+        graph.add(u, g[u][i], 0, -1);
+    scc(&graph.E, L, V);
+    vector<int> result;
+    for (int i = 0; i < t; i++)
+      if (!(p[i]._b || scc.in[p[i]._x] == scc.in[p[i]._y]))
+        result.push_back(i);
+    printf("%d\n", (int)result.size());
+    for (int i = 0; i < result.size(); i++)
+      printf("%d%c", result[i]+1, result.size()? ' ': '\n');
+    if(!result.size()) puts("");
   }
   return 0;
 }
