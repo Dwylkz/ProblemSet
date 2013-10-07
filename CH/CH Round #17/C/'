@@ -34,7 +34,6 @@ template<int N> struct graph_t {
   }
 };
 typedef graph_t<N> graph_i;
-typedef graph_i::edge_t edge_t;
 
 /* Shortest Augment Path
  * */
@@ -88,7 +87,7 @@ template<class edge_t, int N> struct sap_t {
     return mxf;
   }
 };
-typedef sap_t<edge_t, N> sap_i;
+typedef sap_t<graph_i::edge_t, N> sap_i;
 
 template<class edge_t, int N> struct tarjan_t {
   typedef int ia_t[N];
@@ -139,16 +138,13 @@ template<class edge_t, int N> struct tarjan_t {
     time = cc = 0;
   }
 };
-typedef tarjan_t<edge_t, N> tarjan_i;
+typedef tarjan_t<graph_i::edge_t, N> tarjan_i;
 
 tarjan_i tarjan;
 graph_i graph;
-vector<edge_t> &E = graph.E;
-int *L = graph.L;
 sap_i sap;
 ppi_t p[P];
 int n, m, t;
-vector<int> g[N];
 
 void build(int src, int snk) {
   graph.init();
@@ -172,18 +168,7 @@ int main() {
     }
     int src = n+m, snk = src+1, V = snk+1;
     build(src, snk);
-    sap(graph.E, graph.L, V, src, snk);
-    for (int u = 0; u < V; u++) g[u].clear();
-    for (int u = 0; u < V; u++)
-      for (int e = L[u]; ~e; e = E[e].to)
-        if (E[e].w) g[u].push_back(E[e].v);
-        else g[E[e].v].push_back(u);
-    graph.init();
-    for (int u = 0; u < V; u++)
-      for (int i = 0; i < g[u].size(); i++)
-        graph.badd(u, g[u][i], 0);
-    tarjan(&E, L, V);
-    tarjan.scc();
+    int maxf = sap(graph.E, graph.L, V, src, snk);
   }
   return 0;
 }
