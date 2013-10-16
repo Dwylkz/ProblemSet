@@ -1,0 +1,115 @@
+PROBLEM STATEMENT
+Fox Ciel is playing Go with Jiro.
+Ciel plays black and Jiro plays white.
+You are given a vector <string> board that represents a square board on which they play.
+Black pieces are denoted 'x', white pieces 'o' and empty cells '.' (period).
+
+
+
+In the current position no two white pieces are adjacent.
+Jiro has already given up and he will not be making any more moves.
+Ciel is considering making some more moves.
+Her goal now is to maximize the number of empty cells on the board.
+
+
+
+In each move, Ciel can add a black piece onto an empty cell.
+After each move, all dead white pieces are removed from the board.
+A white piece is considered dead if its cell does not share a side with any empty cell.
+
+
+
+Return the maximum number of empty cells on the board, after Ciel makes zero or more moves as described above.
+
+DEFINITION
+Class:FoxAndGo3
+Method:maxEmptyCells
+Parameters:vector <string>
+Returns:int
+Method signature:int maxEmptyCells(vector <string> board)
+
+
+NOTES
+-The rules described in the statement are not identical with the rules of Go. In particular, black pieces never die in this problem.
+
+
+CONSTRAINTS
+-n will be between 3 and 50, inclusive.
+-board will contain exactly n elements.
+-Each element in board will contain exactly n characters.
+-Each character in board will be one of 'o', 'x', and '.'.
+-No two white pieces will be adjacent.
+-Each white piece will be adjacent to at least one empty cell.
+
+
+EXAMPLES
+
+0)
+{"o.o",
+ ".o.",
+ "o.o"}
+
+Returns: 5
+
+The best solution is to put black pieces on (1,2), (2,1), (2,3), and then on (3,2). After that the board will look as follows:
+
+.x.
+x.x
+.x.
+
+There are 5 empty cells.
+
+1)
+{"...",
+ ".o.",
+ "..."}
+
+
+Returns: 8
+
+This time the best solution is don't do any move.
+
+2)
+{"xxxxx",
+ "xxoxx",
+ "xo.ox",
+ "xxoxx",
+ "xxxxx"}
+
+
+Returns: 4
+
+
+
+3)
+{".xox.",
+ ".o.ox",
+ "x.o.o",
+ "ox.ox",
+ ".ox.."}
+ 
+
+Returns: 12
+
+
+
+4)
+{"o.o.o",
+ ".ox..",
+ "oxxxo",
+ "..x..",
+ "o.o.o"}
+
+
+Returns: 12
+
+
+
+5)
+{"...",
+ "...",
+ "..."}
+
+Returns: 9
+
+
