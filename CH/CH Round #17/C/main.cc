@@ -64,6 +64,8 @@ struct sap_t {
       for (int e = g(q[h]); ~e; e = g[e].to)
         if (g[e^1].w && !~dis[g[e].v])
           gap[dis[g[e].v] = dis[q[h]]+1]++, q.push_back(g[e].v);
+    for (int i = 0; i < g.size(); i++)
+      if (!~dis[i]) gap[dis[i] = 0]++;
     int result = 0;
     for ( ; gap[src] < g.size(); ) result += dfs(g, src, snk, src);
     return result;
