@@ -137,7 +137,7 @@ int main() {
     }
     bcc(g);
     for (int i = 0; i < m; i++) id[i] = n+bcc.in[id[i]];
-#if 1
+#if 0
     printf("cc=%2d\n", bcc.cc);
     for (int i = 0; i < n; i++)
       printf("\t%2d: cut=%2d, dfn=%2d, low=%2d\n",
