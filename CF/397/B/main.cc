@@ -12,10 +12,11 @@ int main() {
   for ( ; ~scanf("%d", &t); ) {
     while (t--) {
       scanf("%d%d%d", &n, &l, &r);
-      int quot = n/l, rem = n%l;
-      if (!quot) puts("No");
-      else {
-      }
+      int quo = n/l, rem = n%l;
+      if (!rem) puts("Yes");
+      else if (r-l < 1) puts("No");
+      else if (rem%(r-l)) puts(rem/(r-l) < quo? "Yes": "No");
+      else puts(rem/(r-l) <= quo? "Yes": "No");
     }
   }
   return 0;
