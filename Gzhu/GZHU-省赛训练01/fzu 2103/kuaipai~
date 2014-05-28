@@ -1,7 +1,0 @@
-bool cmpq(int a, int b) {
-	return r[a] < r[b];
-}
-void da() {
-for (i = 0; i < n; i++) x[i] = r[i];
-sort(sa, sa + n, cmpq);
-}
