@@ -1,14 +1,20 @@
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
-#include <vector>
 #include <algorithm>
+#include <vector>
 using namespace std;
 const int N = 1e5+10;
 typedef vector<int> VI;
 
-int n, m, w[N], ban[N], id[N];
+int n, m, w[N], id[N], ufs[N], cnt[N], ban[N];
 VI g[N];
+
+int Find(int x)
+{
+  if (ufs[x] == x) return x;
+  return ufs[x] = Find(ufs[x]);
+}
 
 int main()
 {
@@ -16,9 +22,13 @@ int main()
   while (cin >> n >> m) {
     for (int i = 0; i < n; i++) {
       cin >> w[i];
-      ban[i] = 0;
       g[i].clear();
+      ufs[i] = i;
+      id[i] = i;
+      cnt[i] = 1;
+      ban[i] = 0;
     }
+    sort(id, id+n, [&](int a, int b){return w[a] > w[b];});
     for (int i = 0; i < m; i++) {
       int u, v;
       cin >> u >> v;
@@ -28,29 +38,23 @@ int main()
       g[v].push_back(u);
     }
 
-    for (int i = 0; i < n; i++)
-      id[i] = i;
-    sort(id, id+n, [&](int a, int b){return w[a] > w[b];});
-
     double res = 0;
-    int old = 0;
     for (int i = 0; i < n; i++) {
       int u = id[i];
-      if (!ban[u]) {
-        VI q(1, u);
-        int cnt = 1;
-        for (int h = 0; h < q.size(); h++) {
-          ban[q[h]] = 1;
-          cnt++;
-          for (auto v: g[q[h]])
-            if (w[v] < w[u] && !ban[v])
-              q.push_back(v);
+      int ru = Find(u);
+      for (auto v: g[u]) {
+        if (!ban[v])
+          continue;
+        int rv = Find(v);
+        if (rv != ru) {
+          res += 1.0*cnt[ru]*cnt[rv]*w[u];
+          ufs[rv] = ru;
+          cnt[ru] += cnt[rv];
         }
-        old += cnt;
-        res += 1.0*cnt*cnt*w[u];
       }
+      ban[u] = 1;
     }
-    cout << res*2.0 / ((1.0*n)*(n-1)) << endl;
+    cout << 2.0*res / (1.0*n*(n-1)) << endl;
   }
   return 0;
 }
