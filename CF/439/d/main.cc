@@ -6,54 +6,35 @@
 #include <vector>
 using namespace std;
 const int N = 1e5+10;
-const double EPS = 1e-4;
+const double EPS = 1e-1;
 typedef long long LL;
 typedef vector<int> VI;
 
 int n, m, a[N], b[N];
 
-void input(int* a, int n)
-{
-  for (int i = 0; i < n; i++)
-    cin >> a[i];
-  sort(a, a+n);
-}
-
-LL trans(int *a, int n, int x, int o)
-{
-  LL res = 0;
-  int val = a[0], cur = 0;
-  while (val != x) {
-    int b = x;
-    if (cur+1 < n)
-      b = a[cur+1];
-    int d = min(abs(x-val), abs(b-val));
-    res += 1ll*(cur+1)*d;
-    val += o*d;
-    cur++;
-  }
-  return res;
-}
-
 LL look(int x)
 {
-  return trans(a, n, x, 1)+trans(b, m, x, -1);
+  LL res = 0;
+  for (int i = 0; i < n; i++)
+    if (a[i] < x)
+      res += x-a[i];
+  for (int i = 0; i < m; i++)
+    if (b[i] > x)
+      res += b[i]-x;
+  return res;
 }
 
 int main()
 {
   cin.sync_with_stdio(0);
   while (cin >> n >> m) {
-    input(a, n);
-    input(b, m);
-    reverse(b, b+m);
-    if (a[0] >= b[0]) {
-      puts("0");
-      continue;
-    }
+    for (int i = 0; i < n; i++)
+      cin >> a[i];
+    for (int i = 0; i < m; i++)
+      cin >> b[i];
 
-    double lb = a[0], rb = b[0];
-    LL res = 0;
+    LL res = 1e18;
+    double lb = 1, rb = 1e9;
     while (lb < rb-EPS) {
       double len = (rb-lb)/3.0;
       double midl = lb+len, midr = rb-len;
@@ -62,7 +43,7 @@ int main()
         rb = midr;
       else
         lb = midl;
-      res = min(resl, resr);
+      res = min(res, min(resl, resr));
     }
     cout << res << endl;
   }

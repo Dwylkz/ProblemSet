@@ -9,73 +9,51 @@ typedef vector<VI> VVi;
 
 int n, k, p;
 
-void show(VI& v)
-{
-  cout << v.size();
-  for (auto vi: v)
-    cout << " " << vi;
-  cout << endl;
-}
-
 int main()
 {
   cin.sync_with_stdio(0);
   while (cin >> n >> k >> p) {
-    k -= p;
-    VVi odd, even;
-    VI rem_odd, rem_even;
+    VI a[2];
     for (int i = 0; i < n; i++) {
       int ai;
       cin >> ai;
-      if (ai%2 != 0) {
-        if (odd.size() < k)
-          odd.push_back(VI(1, ai));
-        else
-          rem_odd.push_back(ai);
-      }
+      a[ai%2].push_back(ai);
+    }
+
+    if (a[1].size() < k-p || (a[1].size()-(k-p))%2
+        || a[0].size()+(a[1].size()-(k-p))/2 < p) {
+      puts("NO");
+      continue;
+    }
+
+    VVi res(k);
+    for (int i = 0; i < k-p; i++) {
+      res[i].push_back(a[1].back());
+      a[1].pop_back();
+    }
+
+    for (int i = k-p; i < k; i++)
+      if (!a[0].size())
+        for (int j = 0; j < 2; j++) {
+          res[i].push_back(a[1].back());
+          a[1].pop_back();
+        }
       else {
-        if (even.size() < p)
-          even.push_back(VI(1, ai));
-        else
-          rem_even.push_back(ai);
-      }
-    }
-
-    if (odd.size() < k) {
-      cout << "NO" << endl;
-      continue;
-    }
-
-    if (even.size() < p) {
-      if (rem_odd.size()/2 < p-even.size()) {
-        cout << "NO" << endl;
-        continue;
+        res[i].push_back(a[0].back());
+        a[0].pop_back();
       }
 
-      for (int i = 0; i < p-even.size(); i++) {
-        VI temp = {rem_odd.back(), rem_odd[rem_odd.size()-2]};
-        rem_odd.pop_back();
-        rem_odd.pop_back();
-        even.push_back(temp);
-      }
-    }
-
-    if (rem_odd.size()%2 != 0) {
-      cout << "NO" << endl;
-      continue;
-    }
-
-    VI& rem = p > 0? even[0]: odd[0];
-    for (auto i: rem_odd)
-      rem.push_back(i);
-    for (auto i: rem_even)
-      rem.push_back(i);
+    for (int i = 0; i < 2; i++)
+      for (auto ai: a[i])
+        res[0].push_back(ai);
 
     cout << "YES" << endl;
-    for (auto v: even)
-      show(v);
-    for (auto v: odd)
-      show(v);
+    for (int i = 0; i < k; i++) {
+      cout << res[i].size();
+      for (auto ri: res[i])
+        cout << " " << ri;
+      cout << endl;
+    }
   }
   return 0;
 }
