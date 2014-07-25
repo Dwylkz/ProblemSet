@@ -3,6 +3,37 @@
 #include <string.h>
 using namespace std;
 
+typedef long long LL;
+LL f[6+5];
+LL x, y, n;
+
+
+int main()
+{
+  while (~scanf("%lld%lld%lld", &x, &y, &n)) {
+    LL MOD = 1e9+7;
+    f[1] = x;
+    f[2] = y;
+    f[3] = y-x;
+    f[4] = -x;
+    f[5] = -y;
+    f[6] = x-y;
+    n %= 6;
+    if (n == 0) {
+      while (f[6] < 0)
+        f[6] += MOD;
+      printf("%lld\n", f[6]%MOD);
+    }
+    else {
+      while (f[n] < 0)
+        f[n] += MOD;
+      printf("%lld\n", f[n]%MOD);
+    }
+  }
+  return 0;
+}
+
+/*
 const int MAXN = 100000 + 10;
 char a[MAXN], b[MAXN];
 bool asign, bsign;
@@ -104,3 +135,4 @@ int main(){
 	}
 	return 0;
 }
+*/
