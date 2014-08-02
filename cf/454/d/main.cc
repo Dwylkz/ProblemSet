@@ -6,77 +6,26 @@
 using namespace std;
 typedef vector<int> VI;
 
-const int N = 2e3+10;
-const int P = 100;
-
-struct edge_t {
-  int v, to, w, c;
-};
-vector<edge_t> E;
-int L[N];
-void Init()
-{
-  E.clear();
-  memset(L, -1, sizeof(L));
-}
-void Add(int u, int v, int w, int c)
-{
-  edge_t t = {v, L[u], w, c};
-  L[u] = E.size();
-  E.push_back(t);
-}
-void DAdd(int u, int v, int w, int c)
-{
-  Add(u, v, w, c);
-  Add(v, u, 0, -c);
-}
-
-/* Spfa_Cost_Stream
+/* Lemma:
+ *  forall b[i] in [1, 2*mx) where mx = max(a)
+ * Prove:
+ *  Provided there is a solution that obey sum(abs(ai-bi)) is minimum
+ *  and exists b[k] in [2*mx, oo).
+ *  
+ *  Since we could puts 1s into b arbitrarily (as the gcd(1, ?) = 1)
+ *  and a[k] in [1, mx].
+ *  We have (b[k]-a[k]) in [mx, oo) while (1-a[k]) in [0, mx) if we replace b[k] with 1.
+ *
+ *  As abs(1-a[k]) < abs(b[k]-a[k]), so there is another solution smaller.
+ *  The contradiction appeared.
  * */
-template<class edge_t, int N> struct ek_t {
-vector<edge_t> E;
-static const int inf = 0x7f7f7f7f;
-int n, *L, src, snk, dis[N], ra[N], inq[N];
-int spfa(int u) {
-  vector<int> q(1, u);
-  memset(dis, 0x3f, sizeof(int)*n);
-  memset(ra, -1, sizeof(int)*n);
-  memset(inq, 0, sizeof(int)*n);
-  dis[u] = 0;
-  inq[u] = 1;
-  for (int h = 0; h < q.size(); h++) {
-    u = q[h], inq[u] = 0;
-    for (int e = L[u]; ~e; e = E[e].to) {
-      int v = E[e].v, w = E[e].w, c = E[e].c;
-      if (w && dis[v] > dis[u]+c) {
-        dis[v] = dis[u]+c;
-        ra[v] = e^1;
-        if (inq[v]) continue;
-        inq[v] = 1;
-        q.push_back(v);
-      }
-    }
-  }
-  return ra[snk] != -1;
-}
-int operator () (vector<edge_t>& _E, int *_L, int _n, int _src, int _snk) {
-  E = _E, L = _L, n = _n;
-  src = _src, snk = _snk;
-  int mmf = 0;
-  for ( ; spfa(src); ) {
-    int mf = inf;
-    for (int e = ra[snk]; ~e; e = ra[E[e].v])
-      mf = min(mf, E[e^1].w);
-    for (int e = ra[snk]; ~e; e = ra[E[e].v])
-      E[e].w += mf, E[e^1].w -= mf;
-    mmf += dis[snk]*mf;
-  }
-  return mmf;
-}
-};
-ek_t<edge_t, N> ek;
+const int N = 1e2+10;
+const int P = 60;
+const int M = 17;
+const int S = 1<<M;
 
 VI ps;
+int fac[P];
 bool IsPrime(int x)
 {
   for (int i = 2; i*i <= x; i++)
@@ -86,12 +35,26 @@ bool IsPrime(int x)
 }
 void Gen()
 {
-  for (int i = 2; ps.size() < P; i++)
+  for (int i = 2; i < P; i++)
     if (IsPrime(i))
       ps.push_back(i);
+
+  for (int i = 1; i < P; i++)
+    for (int j = 0; j < ps.size(); j++)
+      if (i%ps[j] == 0)
+        fac[i] |= 1<<j;
 }
 
 int n, a[N];
+
+int f[N][S], g[N][S];
+void Show(int x, int y)
+{
+  if (x > 1)
+    Show(x-1, y&~fac[g[x][y]]);
+
+  printf("%d%c", g[x][y], x == n? '\n': ' ');
+}
 
 int main()
 {
@@ -101,35 +64,32 @@ int main()
     for (int i = 0; i < n; i++)
       cin >> a[i];
 
-    Init();
-    int one = n+P, src = one+1, snk = src+1;
-    for (int i = 0; i < n; i++) {
-      DAdd(src, i, 1, 0);
-      DAdd(i, one, 1, a[i]-1);
-      for (int j = 0; j < P; j++)
-        DAdd(i, n+j, 1, abs(a[i]-ps[j]));
-    }
-    for (int i = 0; i < P; i++)
-      DAdd(n+i, snk, 1, 0);
-    DAdd(one, snk, n, 0);
+    memset(f, 0x3f, sizeof(f));
+    memset(g, -1, sizeof(g));
+    f[0][0] = 0;
+    for (int i = 1; i <= n; i++) {
+      for (int j = 1; j < P; j++) {
+        int mask = (S-1)&~fac[j];
+        for (int s = mask; ; s = (s-1)&mask) {
+          int to = s|fac[j];
+          int val = f[i-1][s]+abs(j-a[i-1]);
+          if (f[i][to] > val) {
+            f[i][to] = val;
+            g[i][to] = j;
+          }
 
-    int res = ek(E, L, snk+1, src, snk);
-    VI ans;
-    for (int i = 0; i < n; i++)
-      for (int e = L[i]; ~e; e = E[e].to)
-        if (e%2 == 0 && ek.E[e].w == 0)
-          if (E[e].v == one)
-            ans.push_back(1);
-          else
-            ans.push_back(ps[E[e].v-n]);
-
-    for (int i = 0; i < ans.size(); i++) {
-      cout << ans[i];
-      if (i == ans.size()-1)
-        cout << endl;
-      else
-        cout << " ";
+          if (s == 0)
+            break;
+        }
+      }
     }
+
+    int id = 0;
+    for (int i = 0; i < S; i++)
+      if (f[n][i] < f[n][id])
+        id = i;
+
+    Show(n, id);
   }
   return 0;
 }
