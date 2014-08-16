@@ -22,7 +22,7 @@ struct Edge {
 
 int n, m;
 Edge e[N];
-int f[N], g[N];
+int f[N];
 VI d[M];
 
 int main()
@@ -39,21 +39,22 @@ int main()
 
     int ret = 0;
     memset(f, 0, sizeof(f));
-    memset(g, 0, sizeof(g));
-    for (int i = 0; i < M; i++)
-      for (auto j: d[i]) {
-        int u = e[j].u, v = e[j].v, w = e[j].w;
-        if (g[u] >= w)
-          continue;
-
+    for (int w = 0; w < M; w++) {
+      VI t, c;
+      for (auto i: d[w]) {
+        int u = e[i].u, v = e[i].v;
         if (f[v] >= f[u]+1)
           continue;
 
-        f[v] = f[u]+1;
-        g[v] = w;
-
-        ret = max(ret, f[v]);
+        t.push_back(v);
+        c.push_back(f[u]+1);
       }
+
+      for (int i = 0; i < t.size(); i++) {
+        f[t[i]] = max(f[t[i]], c[i]);
+        ret = max(ret, f[t[i]]);
+      }
+    }
 
     cout << ret << endl;
   }
