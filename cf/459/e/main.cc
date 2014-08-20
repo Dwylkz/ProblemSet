@@ -39,10 +39,10 @@ int main()
 
     int ret = 0;
     memset(f, 0, sizeof(f));
-    memset(g, 0, sizeof(g));
-    for (int i = 0; i < M; i++)
-      for (auto j: d[i]) {
-        int u = e[j].u, v = e[j].v, w = e[j].w;
+    memset(g, -1, sizeof(g));
+    for (int w = 0; w < M; w++)
+      for (auto j: d[w]) {
+        int u = e[j].u, v = e[j].v;
         if (g[u] >= w)
           continue;
 
