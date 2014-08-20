@@ -80,7 +80,7 @@ string Format(const string& fmt, ...)
   va_list ap;
   va_start(ap, fmt);
 
-  char* buff = new char[vsprintf(NULL, fmt.data(), ap)+2];
+  char* buff = new char[vsnprintf(NULL, 0, fmt.data(), ap)+2];
   vsprintf(buff, fmt.data(), ap);
 
   va_end(ap);
@@ -103,7 +103,7 @@ int main()
   Map(as, [&](string& s){cout << m[s] << " ";});
 
   string sum = Fold(as, string(""), plus<string>());
-  cout << Format("(%d)", sum.data()) << endl;
+  cout << Format("(%s)", sum.data()) << endl;
 
   return 0;
 }
