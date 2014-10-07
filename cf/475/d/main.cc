@@ -6,100 +6,61 @@ typedef long long LL;
 
 const int N = 1e5+10;
 
-int n, q;
-struct Ans {
-  int first, last;
-  LL count;
-};
-unordered_map<int, Ans> ans;
-Ans& Find(int x)
+int GCD(int a, int b)
 {
-  if (ans.find(x) == ans.end()) {
-    ans[x].count = 0;
-    ans[x].first = -2;
-    ans[x].last = -2;
-  }
-  return ans[x];
+  return b? GCD(b, a%b): a;
 }
 
-void Count(int i, int x, int y)
+int n, a[N], q;
+
+map<int, LL> ans;
+void DC(int l, int r)
 {
-  Ans& xa = Find(x);
-  if (xa.last != i)
+  if (r-l == 1) {
+    ans[a[l]]++;
     return ;
-
-  int first = -2;
-  for (int j = 2; 1ll*j*j <= y; j++) {
-    if (y%j)
-      continue;
-
-    while (y%j == 0)
-      y /= j;
-
-    Ans& ia = Find(j);
-    if (first == -2 || (ia.last == i && ia.first < first))
-      first = ia.first;
-  }
-  if (y != 1) {
-    Ans& ia = Find(y);
-    if (first == -2 || (ia.last == i && ia.first < first))
-      first = ia.first;
   }
 
-  if (first == -2)
-    xa.count += i-xa.first;
-  else if (xa.first < first)
-    xa.count += first-xa.first;
-}
+  int m = (l+r)/2;
+  DC(l, m);
+  DC(m, r);
 
-void Update(int i, int x)
-{
-  Ans& xa = ans[x];
-  if (xa.last == i)
-    xa.last++;
-  else {
-    xa.first = i;
-    xa.last = i+1;
-  }
+  vector<pair<int, int>> tol, tor;
+  int gcd = a[m], lower = m, upper = m;
+  for (int i = m+1; i < r; i++)
+    if (gcd != GCD(gcd, a[i])) {
+      tor.push_back(make_pair(gcd, i-lower));
+      gcd = GCD(gcd, a[i]);
+      lower = i;
+    }
+  tor.push_back(make_pair(gcd, r-lower));
+
+  gcd = a[m-1];
+  for (int i = m-2; i >= l; i--)
+    if (gcd != GCD(gcd, a[i])) {
+      tol.push_back(make_pair(gcd, upper-(i+1)));
+      gcd = GCD(gcd, a[i]);
+      upper = i+1;
+    }
+  tol.push_back(make_pair(gcd, upper-l));
+
+  for (auto& pl: tol)
+    for (auto& pr: tor)
+      ans[GCD(pl.first, pr.first)] += 1ll*pl.second*pr.second;
 }
 
 int main()
 {
   scanf("%d", &n);
-
-  for (int i = 0; i < n; i++) {
-    int ai;
-    scanf("%d", &ai);
-
-    for (int j = 1; 1ll*j*j <= ai; j++) {
-      if (ai%j)
-        continue;
-
-      Count(i, j, ai/j);
-      if (ai/j != j)
-        Count(i, ai/j, j);
-    }
-
-    for (int j = 1; 1ll*j*j <= ai; j++) {
-      if (ai%j)
-        continue;
-
-      Update(i, j);
-      if (ai/j != j)
-        Update(i, ai/j);
-    }
-
-    ans[ai].count++;
-    for (auto& a: ans)
-      printf("%d: %d %d %lld\n", a.first, a.second.first, a.second.last, a.second.count);
-    puts("---------");
-  }
+  for (int i = 0; i < n; i++)
+    scanf("%d", a+i);
+  DC(0, n);
 
   scanf("%d", &q);
   while (q--) {
     int qi;
     scanf("%d", &qi);
-    cout << Find(qi).count << endl;
+    cout << ans[qi] << endl;
   }
   return 0;
 }

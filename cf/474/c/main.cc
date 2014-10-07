@@ -22,6 +22,11 @@ struct Point {
     return lhs.x*rhs.y-lhs.y*rhs.x;
   }
 
+  friend int operator * (const Point& lhs, const Point& rhs)
+  {
+    return lhs.x*rhs.x+lhs.y*rhs.y;
+  }
+
   void Input()
   {
     scanf("%d%d", &x, &y);
@@ -48,11 +53,31 @@ struct Point {
 
 int n;
 
+int Check2(Point* p)
+{
+  for (int i = 0; i < 4; i++)
+    if (((p[(i+1)%4]-p[i])%(p[(i+2)%4]-p[i])) <= 0)
+      return false;
+
+  for (int i = 0; i < 4; i++)
+    if (((p[i]-p[(i+1)%4])*(p[(i+2)%4]-p[(i+1)%4])) != 0)
+      return false;
+
+  int l = (p[0]-p[3]).Mod2();
+  if (l == 0)
+    return false;
+
+  for (int i = 1; i < 4; i++)
+    if ((p[i]-p[i-1]).Mod2() != l)
+      return false;
+  return true;
+}
+
 bool Check(Point* p, Point* a, int* r)
 {
   Point tp[4];
   for (int i = 0; i < 4; i++)
-    tp[i] = (p[i]-a[i]).Rot(r[i])+a[i];
+    tp[i] = a[i]+(p[i]-a[i]).Rot(r[i]);
 
   int id[4] = {0, 1, 2, 3};
   do {
@@ -60,28 +85,10 @@ bool Check(Point* p, Point* a, int* r)
     for (int i = 0; i < 4; i++)
       q[i] = tp[id[i]];
 
-    for (int i = 0; i < 4; i++)
-      if (((q[(i+2)%4]-q[i])%(q[(i+1)%4]-q[i])) >= 0)
-        return false;
-
-    int l = (q[0]-q[3]).Mod2();
-    if (l == 0)
-      return false;
-
-    for (int i = 1; i < 4; i++)
-      if ((q[i]-q[i-1]).Mod2() != l)
-        return false;
+    if (Check2(q))
+      return true;
   } while (next_permutation(id, id+4));
-
-  for (int i = 0; i < 4; i++) {
-    p[i].Output();
-    printf("->");
-    tp[i].Output();
-    printf(" ");
-  }
-  puts("");
-
-  return true;
+  return false;
 }
 
 int main()
