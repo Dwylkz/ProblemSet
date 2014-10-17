@@ -11,99 +11,88 @@
 #include <cstdarg>
 using namespace std;
 
-namespace dwylkz {
+const int N = 1<<17;
 
-typedef long long LL;
-typedef vector<int> VI;
-typedef vector<LL> VLl;
-typedef vector<string> VS;
-typedef map<int, int> MII;
+struct Tree {
+  int maxval_, delta_;
 
-template<class Y, class X>
-Y Cast(const X& x)
+  void Add(int delta)
+  {
+    delta_ += delta;
+    maxval_ += delta;
+  }
+
+  void Push(Tree& lval, Tree& rval)
+  {
+    lval.Add(delta_);
+    rval.Add(delta_);
+    delta_ = 0;
+  }
+
+  void Pull(Tree& lval, Tree& rval)
+  {
+    maxval_ = max(lval.maxval_, rval.maxval_);
+  }
+};
+
+Tree tree[N*2+10];
+
+void Add(int l, int r, int delta, int lb = 0, int rb = N, int x = 1)
 {
-  stringstream ss;
-  ss << x;
+  if (l <= lb && rb <= r) {
+    tree[x].Add(delta);
+    return ;
+  }
 
-  Y y;
-  ss >> y;
-  return y;
+  tree[x].Push(tree[x<<1], tree[x<<1|1]);
+
+  int m = (lb+rb)>>1;
+  if (l < m)
+    Add(l, r, delta, lb, m, x<<1);
+  if (m < r)
+    Add(l, r, delta, m, rb, x<<1|1);
+
+  tree[x].Pull(tree[x<<1], tree[x<<1|1]);
 }
 
-template<class T>
-istream& operator >> (istream& is, vector<T>& vs)
+int Ask(int l, int r, int lb = 0, int rb = N, int x = 1)
 {
-  for (size_t i = 0; i < vs.size(); i++)
-    is >> vs[i];
-  return is;
+  if (l <= lb && rb <= r)
+    return tree[x].maxval_;
+
+  tree[x].Push(tree[x<<1], tree[x<<1|1]);
+
+  int m = (lb+rb)>>1, maxval = 0;
+  if (l < m)
+    maxval = max(maxval, Ask(l, r, lb, m, x<<1));
+  if (m < r)
+    maxval = max(maxval, Ask(l, r, m, rb, x<<1|1));
+
+  tree[x].Pull(tree[x<<1], tree[x<<1|1]);
+  return maxval;
 }
 
-template<class T>
-ostream& operator << (ostream& os, const vector<T>& vs)
-{
-  for (size_t i = 0; i < vs.size()-1; i++)
-    os << vs[i] << " ";
-  os << vs.back() << endl;
-  return os;
-}
-
-template<class T>
-map<T, int> Discrete(const vector<T>& vs)
-{
-  map<T, int> m;
-  for (auto& v: vs)
-    m[v] = 1;
-
-  int rank = 0;
-  for (auto& mi: m)
-    mi.second = rank++;
-  return m;
-}
-
-template<class T, class F>
-void Map(T xs, F f)
-{
-  for_each(xs.begin(), xs.end(), f);
-}
-
-template<class T, class R, class F>
-R Fold(T xs, const R& init, F f)
-{
-  R ret = init;
-  for (auto x: xs)
-     ret = f(ret, x);
-  return ret;
-}
-
-string Format(const string& fmt, ...)
-{
-  va_list ap;
-  va_start(ap, fmt);
-
-  char* buff = new char[vsnprintf(NULL, 0, fmt.data(), ap)+2];
-  vsprintf(buff, fmt.data(), ap);
-
-  va_end(ap);
-
-  string ret(buff);
-  delete buff;
-
-  return ret;
-}
-
-}
-using namespace dwylkz;
+int n, q;
 
 int main()
 {
-  VS as(5);
-  cin >> as;
+  scanf("%d%d", &n, &q);
+  for (int i = 0; i < n; i++) {
+    int ai;
+    scanf("%d", &ai);
+    Add(i, i+1, ai);
+  }
 
-  auto m = Discrete(as);
-  Map(as, [&](string& s){cout << m[s] << " ";});
-
-  string sum = Fold(as, string(""), plus<string>());
-  cout << Format("(%s)", sum.data()) << endl;
-
+  while (q--) {
+    int oper, l, r;
+    scanf("%d%d%d", &oper, &l, &r);
+    if (oper == 0) {
+      int delta;
+      scanf("%d", &delta);
+      Add(l, r, delta);
+    }
+    else
+      printf("%d\n", Ask(l, r));
+  }
   return 0;
 }
