@@ -5,12 +5,17 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <numeric>
 
 using namespace std;
 
-const int H = 320;
-const int N = 2e5+1;
+const int N = 2e5+5;
 const int MOD = 1e9+7;
+
+int Add(int a, int b)
+{
+  return (a+b)%MOD;
+}
 
 int r, g;
 
@@ -19,35 +24,42 @@ int G(int x)
   return x*(x+1)/2;
 }
 
-int memo[H][N];
-int F(int h, int hi, int tr)
+int H(int n)
 {
-  if (tr < 0 || g-(G(h)-G(hi)-(r-tr)) < 0)
-    return 0;
+  int ret = 1;
+  while (G(ret) <= n)
+    ret++;
+  return ret;
+}
 
-  if (hi == 0)
-    return 1;
+int memo[2][N];
+int F(int h)
+{
+  for (int i = 0; i < 2; i++)
+    for (int j = 0; j <= r; j++)
+      memo[i][j] = 0;
 
-  if (memo[hi][tr] != -1)
-    return memo[hi][tr];
+  int *p = memo[0], *q = memo[1];
+  p[0] = 1;
+  for (int i = 1; i < h; i++) {
+    for (int j = 0; j <= r; j++) {
+      if (G(i)-j > g)
+        continue;
 
-  return memo[hi][tr] = (F(h, hi-1, tr)+F(h, hi-1, tr-hi))%MOD;
+      q[j] = Add(q[j], p[j]);
+      if (j >= i)
+        q[j] = Add(q[j], p[j-i]);
+    }
+    swap(p, q);
+    for (int j = 0; j <= r; j++)
+      q[j] = 0;
+  }
+  return accumulate(p, p+r+1, 0, Add);
 }
 
 int main()
 {
   scanf("%d%d", &r, &g);
-
-  int lb = 1, rb = H;
-  while (lb < rb) {
-    int m = (lb+rb)>>1;
-    memset(memo, -1, sizeof(memo));
-    if (F(m, m, r) > 0)
-      lb = m+1;
-    else
-      rb = m;
-  }
-  memset(memo, -1, sizeof(memo));
-  printf("%d\n", F(rb-1, rb-1, r));
+  printf("%d\n", F(H(r+g)));
   return 0;
 }
