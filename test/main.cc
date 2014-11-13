@@ -76,6 +76,9 @@ int n, q;
 
 int main()
 {
+  int* h = NULL;
+  delete h;
+
   scanf("%d%d", &n, &q);
   for (int i = 0; i < n; i++) {
     int ai;
