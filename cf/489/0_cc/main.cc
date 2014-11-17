@@ -1,17 +1,19 @@
-#include <algorithm>
-#include <cmath>
 #include <cstdio>
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <map>
-#include <set>
 #include <string>
 #include <vector>
 
 using namespace std;
 
+int n;
+
 int main()
 {
+  scanf("%d", &n);
+  printf("%d", n);
   return 0;
 }
