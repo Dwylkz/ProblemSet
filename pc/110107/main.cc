@@ -56,13 +56,16 @@ bool IsIn(int x, int y)
 
 bool IsCheck(Chess& _, int x, int y, char k)
 {
-  for (int i = 1; i <= _.len; i++)
-    for (int j = _.start; j < _.end; j++) {
-      int tx = x+vec[j][0]*i;
-      int ty = y+vec[j][1]*i;
-      if (IsIn(tx, ty) && b[tx][ty] != '.')
-        return b[tx][ty] == k;
-    }
+    for (int j = _.start; j < _.end; j++)
+      for (int i = 1; i <= _.len; i++) {
+        int tx = x+vec[j][0]*i;
+        int ty = y+vec[j][1]*i;
+        if (IsIn(tx, ty) && b[tx][ty] != '.') {
+          if (b[tx][ty] == k)
+            return true;
+          break;
+        }
+      }
   return false;
 }
 
