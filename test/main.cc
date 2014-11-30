@@ -74,6 +74,15 @@ int Ask(int l, int r, int lb = 0, int rb = N, int x = 1)
 
 int n, q;
 
+template<class T, class F> T Conv(const F& from)
+{
+  stringstream ss;
+  ss << from;
+  T to;
+  to << ss;
+  return to;
+}
+
 int main()
 {
   int* h = NULL;
