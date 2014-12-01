@@ -1,9 +1,14 @@
 #include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <deque>
 #include <iostream>
 #include <map>
-#include <numeric>
+#include <queue>
+#include <set>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -12,8 +17,7 @@ int n;
 
 int main()
 {
-  while (~scanf("%d", &n)) {
-    printf("%d\n", n);
-  }
+  scanf("%d", &n);
+  printf("%d", n);
   return 0;
 }
