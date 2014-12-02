@@ -68,7 +68,6 @@ void DAC(int l, int r)
   if (r-l < 2)
     return ;
   int m = (l+r)/2;
-  DAC(l, m);
   int np = 0;
   for (int i = l; i < m; i++)
     if (q[i].op == 1)
@@ -87,6 +86,7 @@ void DAC(int l, int r)
   for (int i = 0; i < np; i++)
     if (q[p[i].i].op == 1)
       f.Add(p[i].y1, -q[p[i].i].a);
+  DAC(l, m);
   DAC(m, r);
 }
 
@@ -104,7 +104,6 @@ int main()
     }
     n++;
   }
-  f.Init();
   DAC(0, n);
   for (int i = 0; i < m; i++)
     printf("%d\n", ans[i]);
