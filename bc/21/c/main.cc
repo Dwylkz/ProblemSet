@@ -8,7 +8,7 @@
 
 using namespace std;
 
-const int N = 1e5+5;
+const int N = 1<<17;
 
 typedef long long LL;
 typedef map<LL, int> MII;
@@ -30,7 +30,7 @@ struct Node {
   LL s;
   Node* to[2];
 };
-Node pst[N*20+5], *top, *root[N];
+Node pst[N*19], *top, *root[N];
 Node* Phi(int l, int r)
 {
   Node* x = top++;
@@ -75,7 +75,7 @@ int n;
 int Lower(MII& m, LL v)
 {
   MII::iterator i = m.lower_bound(v);
-  return i == m.end()? 0: i->second;
+  return i == m.end()? m.size(): i->second;
 }
 int Upper(MII& m, LL v)
 {
@@ -102,8 +102,6 @@ int main()
     sort(a, a+n);
     top = pst;
     root[0] = Phi(0, da.size()-1);
-    for (int i = 1; i <= dl.size(); i++)
-      root[i] = root[0];
     Node* last = root[0];
     for (int i = 0; i < n; i++) {
       root[dl[a[i].l]+1] = Add(da[a[i].a], a[i].s, 0, da.size()-1, last);
