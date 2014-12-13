@@ -10,61 +10,51 @@
 #include <queue>
 #include <stack>
 #include <cmath>
-using namespace std;
-//STL-Alias
-#define UN(c, a) unique(c, a)
-#define MS(c, a) memset(c, a, sizeof c)
-#define FLC(c, a ,b) fill(c, c + a, b)
-#define LOS(c, a, b) lower_bound(c, a, b)
-#define UPS(c, a, b) upper_bound(c, a, b)
-//Syntax-Alias
-#define Rep(c, a, b) for (int c = (a); c < (b); c++)
-#define Nre(c, a, b) for (int c = (a); c > (b); c--)
-//DEBUG
-#define FK puts("Fu*k here!")
-#define PA(s, c, a, b, p, f){\
-	printf(s);\
-	Rep(c, a, b) printf(p, (f));\
-	puts("");}
-//Constant
-#define MAXN (17)
-#define INFI (0x7fffffff)
-#define MOD (1000000007)
-#define HW "Hello, world!"
-//Type-Alias
-typedef long long LL;
-typedef long double LD;
-typedef int AI[MAXN];
-typedef double AD[MAXN];
-typedef LL ALL[MAXN];
-typedef LD ALD[MAXN];
 
-char s[1000010];
+using namespace std;
+
+const int N = 1e6+5;
+
+char s[N];
+
 int main()
 {
 	while (~scanf("%s", s)) {
-		int h = 0, l = strlen(s), hl = strlen(HW);
-		bool yes = 1;;
-		for (int i = 0; i < l / 2; i++) {
-			if (s[i] != s[l - i - 1]) {
-				yes = 0;
-				break;
-			}
-		}
-
-		for (int i = 0; i < l; i++) {
-			if (s[i] == 'H') {
-				h++;
-			}
-#if 0
-			if (s[i] == 'H') {
-				puts("H");
-			} else {
-				puts(s);
-			}
-#endif
-		}
-		puts(~h & 1? "Yes": "No");
+    const char* ans[] = {"No", "Yes"};
+    int nq = 0, n = strlen(s);
+    for (int i = 0; s[i]; i++)
+      if (s[i] == 'Q')
+        nq++;
+    int q = sqrt(nq);
+    if (q*q != nq) {
+      puts(ans[0]);
+      continue;
+    }
+    if (q == 0) {
+      puts(ans[1]);
+      continue;
+    }
+    string foo = "";
+    int pre = 0, j = 0;
+    while (j < q) {
+      if (s[pre] == 'Q')
+        j++;
+      foo += s[pre++];
+    }
+    int first = foo.find('Q');
+    foo.erase(foo.begin(), foo.begin()+first/2);
+    int suf = n;
+    while (s[suf-1] != 'Q')
+      suf--;
+    for (int i = suf+(n-suf)/2; s[i]; i++)
+      foo += s[i];
+    string bar;
+    for (int i = 0; foo[i]; i++)
+      if (foo[i] == 'H')
+        bar += 'H';
+      else
+        bar += foo;
+    puts(ans[!strcmp(s, bar.data())]);
 	}
 	return 0;
 }

@@ -1,3 +1,4 @@
-main: main.o
-	g++ main.o -o main
-main.o: main.cpp
+main: main.cpp
+
+run:
+	@cat input.in | ./main
