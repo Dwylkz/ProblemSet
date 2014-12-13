@@ -14,21 +14,12 @@ using namespace std;
 
 int main()
 {
-  ifstream is;
-  is.open("in");
-  if (!is.is_open()) {
-    cerr << "fuck " << endl;
-    return -1;
-  }
+  // int a[] = {2, 5, 11, 9};
+  // int *pa = a;
+  // cout << ++(*pa) << endl << (*pa)++ << endl;
+  // cout << *pa << endl;
 
-  int n;
-  while (true) {
-    is >> n;
-    is.good();
-    if (!is.good())
-      break;
-    cout << bool(is) << " " << is.good() << " " << n << endl;
-  }
-  is.close();
+  int b = 1;
+  cout << ++b << endl << b++ << endl;
   return 0;
 }
