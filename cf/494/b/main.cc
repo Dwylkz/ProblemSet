@@ -21,7 +21,7 @@ int Add(int a, int b)
   return (a+b)%MOD;
 }
 
-int n, p[N], f[N], g[N];
+int n, p[N], f[N], fs[N], fss[N];
 char s[N], t[N];
 
 void Kmp(int* p, char* s)
@@ -39,32 +39,22 @@ int main()
 {
   scanf("%s%s", s, t);
   Kmp(p, t);
-  // for (int i = 0; t[i]; i++)
-  //   printf(" %d", p[i]);
-  // puts("");
-  int j = -1, last = 0, nt = strlen(t);
-  g[0] = 1;
+  int j = -1, nt = strlen(t);
   for (int i = 0; s[i]; i++) {
-    if (i > 0)
-      f[i] = Add(f[i-1], last);
-    while (j != -1 && s[i] != t[j+1])
+    while (j != -1 && t[j+1] != s[i])
       j = p[j];
-    if (s[i] == t[j+1])
+    if (t[j+1] == s[i])
       j++;
-    if (!t[j+1])
-      f[i] = Add(f[i], i-nt >= 0? g[i-nt]: 1);
-    if (i > 0)
-      g[i] = Add(g[i-1], 1+f[i]);
     if (!t[j+1]) {
-      last = f[i];
+      f[i+1] = Add(fss[i-nt+1], (i+1)-nt+1);
       j = p[j];
-      // printf("in %d\n", i);
     }
+    else {
+      f[i+1] = f[i];
+    }
+    fs[i+1] = Add(fs[i], f[i+1]);
+    fss[i+1] = Add(fss[i], fs[i+1]);
   }
-  // for (int i = 0; s[i]; i++)
-  //   printf("%d%c", f[i], !s[i+1]? '\n': ' ');
-  // for (int i = 0; s[i]; i++)
-  //   printf("%d%c", g[i], !s[i+1]? '\n': ' ');
-  // printf("%d\n", f[strlen(s)-1]);
+  printf("%d\n", fs[strlen(s)]);
   return 0;
 }
