@@ -29,53 +29,22 @@ template<typename T, typename F> T Conv(F from)
     return foo;
 }
 
+bool Constract(char* lhs, char* rhs)
+{
+  return true;
+}
+
 int main()
 {
   scanf("%d", &n);
-  for (int i = 0; i < n; i++)
+  for (int i = 1; i <= n; i++)
     scanf("%s", d[i]);
-  int c = 0;
-  for (int i = 0; i < n; i++) {
-    int l = strlen(d[i]);
-    string foo = Conv<string>(c);
-    bool need = foo.size() == l;
-    // printf("%s,%lu and %s,%d\n", foo.data(), foo.size(), d[i], l);
-    if (need) {
-      for (int j = l-1; j >= 0; j--) {
-        if (d[i][j] != '?')
-          continue;
-        if (need) {
-          if (foo.substr(j+1) >= string(d[i]).substr(j+1)) {
-            if (foo[j] <= '9') {
-              d[i][j] = foo[j]+1;
-              need = false;
-            }
-            else
-              d[i][j] = foo[j];
-          }
-          else
-            d[i][j] = foo[j];
-        }
-        else
-          d[i][j] = foo[j];
-      }
-    }
-    else {
-      for (int j = l-1; j >= 1; j--)
-        if (d[i][j] == '?')
-          d[i][j] = '0';
-      if (d[i][0] == '?')
-        d[i][0] = '1';
-      // printf("%d, %d: no need %s\n", c, i, d[i]);
-    }
-    int tc = Conv<int>(d[i]);
-    if (foo.size() > l || tc <= c) {
-      // printf("%s <= %d\n", d[i], c);
+  d[0][0] = '0';
+  for (int i = 1; i <= n; i++)
+    if (!Constract(d[i-1], d[i])) {
       puts("NO");
       return 0;
     }
-    c = tc;
-  }
   puts("YES");
   for (int i = 0; i < n; i++)
     puts(d[i]);
