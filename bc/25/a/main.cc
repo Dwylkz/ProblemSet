@@ -20,12 +20,12 @@ bool HasLoop(int u)
 {
   if (ban[u])
     return true;
+  bool has = false;
   ban[u] = true;
   for (int i = 0; i < (int)g[u].size(); i++)
-    if (HasLoop(g[u][i]))
-      return true;
+    has |= HasLoop(g[u][i]);
   ban[u] = false;
-  return false;
+  return has;
 }
 
 int main()
@@ -36,13 +36,12 @@ int main()
     for (int i = 0; i < m; i++) {
       int a, b;
       scanf("%d%d", &a, &b);
-      g[b-1].push_back(a-1);
+      g[a-1].push_back(b-1);
     }
+    bool has = false;
     for (int v = 0; v < n; v++)
-      g[n].push_back(v);
-    for (int u = 0; u <= n; u++)
-      ban[u] = false;
-    puts(!HasLoop(n)? "YES": "NO");
+      has |= HasLoop(v);
+    puts(!has? "YES": "NO");
   }
   return 0;
 }
