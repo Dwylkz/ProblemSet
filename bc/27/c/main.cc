@@ -9,50 +9,95 @@
 
 using namespace std;
 
-const int N = 3e5+5;
+const int N = 1e6+5;
 
-int n, m, a[N], b[N];
+typedef pair<int, int> R;
+typedef vector<R> Rs;
 
-bool Equal(int x[], int i, int y[], int j)
+int Gcd(int a, int b)
 {
-  return x[i-1]*y[j] == x[i]*y[j-1];
+  if (b)
+    return Gcd(b, a%b);
+  return a;
 }
 
-int p[N];
-void Kmp(int s[], int n)
+R Trim(int x, int y)
 {
-  p[0] = -1;
-  int i = 1, j = -1;
-  while (i < n)
-    if (Equal(s, j+1, s, i)) {
-      p[i] = j+1;
-      i++;
-      j++;
-    } else if (j == -1) {
-      p[i] = -1;
-      i++;
-    } else {
-      j = p[j];
+  int gcd = Gcd(x, y);
+  return R(x/gcd, y/gcd);
+}
+
+struct Trie {
+  typedef map<R, Trie*> To;
+  typedef To::iterator ToIter;
+
+  Trie* f;
+  To to;
+  int c;
+};
+Trie trie[N], *top;
+Trie* Make()
+{
+  top->f = NULL;
+  top->to.clear();
+  top->c = 0;
+  return top++;
+}
+void Init()
+{
+  top = trie;
+  Make();
+}
+void Push(Rs& rs)
+{
+  Trie* x = trie;
+  for (int i = 0; i < (int)rs.size(); i++) {
+    if (!x->to.count(rs[i]))
+      x->to[rs[i]] = Make();
+    x = x->to[rs[i]];
+  }
+  x->c++;
+}
+void Build()
+{
+  vector<Trie*> q;
+  for (Trie::ToIter i = trie->to.begin(); i != trie->to.end(); i++) {
+    q.push_back(i->second);
+    i->second->f = trie;
+  }
+  for (int h = 0; h < (int)q.size(); h++)
+    for (Trie::ToIter i = q[h]->to.begin(); i != q[h]->to.end(); i++) {
+      q.push_back(i->second);
+      Trie* y = q[h]->f;
+      while (y->f != NULL && !y->to.count(i->first))
+        y = y->f;
+      if (y->to.count(i->first)) {
+        i->second->f = y->to[i->first];
+        i->second->c += i->second->f->c;
+      } else {
+        i->second->f = trie;
+      }
     }
 }
-int Kmp(int x[], int n, int y[], int m)
+int64_t Eat(Rs& rs)
 {
-  int i = 0, j = -1, res = 0;
-  while (i < n)
-    if (Equal(x, i, y, j+1)) {
+  int64_t res = 0ll;
+  Trie* x = trie;
+  int i = 0;
+  while (i < (int)rs.size())
+    if (x->to.count(rs[i])) {
+      x = x->to[rs[i]];
+      res += x->c;
       i++;
-      j++;
-      if (j+1 == m) {
-        res++;
-        j = p[j];
-      }
-    } else if (j == -1) {
-      i++;
+    } else if (x->f != NULL) {
+      x = x->f;
     } else {
-      j = p[j];
+      i++;
     }
   return res;
 }
+
+int n, m;
 
 int main()
 {
@@ -60,22 +105,36 @@ int main()
   scanf("%d", &T);
   while (T--) {
     scanf("%d%d", &n, &m);
-    for (int i = 0; i < n; i++)
-      scanf("%d", a+i);
-    int64_t res = 0;
+    Rs ask;
+    int div = 0;
+    for (int i = 0; i < n; i++) {
+      int ai;
+      scanf("%d", &ai);
+      if (i > 0)
+        ask.push_back(Trim(div, ai));
+      div = ai;
+    }
+    Init();
+    int64_t res = 0ll;
     for (int i = 0; i < m; i++) {
       int k;
       scanf("%d", &k);
-      for (int j = 0; j < k; j++)
-        scanf("%d", b+j);
-      if (k == 1) {
-        res += n;
-        continue;
+      Rs rs;
+      int div = 0;
+      for (int j = 0; j < k; j++) {
+        int bi;
+        scanf("%d", &bi);
+        if (j > 0)
+          rs.push_back(Trim(div, bi));
+        div = bi;
       }
-      Kmp(b+1, k-1);
-      res += Kmp(a+1, n-1, b+1, k-1);
+      if (k == 1)
+        res += n;
+      else
+        Push(rs);
     }
-    cout << res << endl;
+    Build();
+    cout << res+Eat(ask) << endl;
   }
   return 0;
 }
