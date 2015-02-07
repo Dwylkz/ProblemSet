@@ -1,36 +1,45 @@
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <iostream>
+#include <map>
+#include <numeric>
+#include <vector>
+
 using namespace std;
-const int N = 4e5+10;
 
-template<class T> struct mana_t {
-  void operator () (T *s, int &n, int *p) {
-    for (int i = n<<1; i >= 0; i--) s[i] = i&1? s[i>>1]: -1;
-    p[s[n = n<<1|1] = 0] = 1;
-    for (int i = p[1] = 2, k = 1; i < n; i++) {
-      p[i] = min(p[2*k-i], max(k+p[k]-i, 1));
-      for (; p[i] <= i && i+p[i] < n && s[i-p[i]] == s[i+p[i]]; ) p[i]++;
-      if (k+p[k] < i+p[i]) k = i;
+const int N = 22e4+5;
+
+char foo[N], bar[N];
+int n, p[N];
+
+int main()
+{
+  while (scanf("%s", foo) != EOF) {
+    int bari = 0;
+    bar[bari++] = '#';
+    for (int i = 0; foo[i]; i++) {
+      bar[bari++] = foo[i];
+      bar[bari++] = '#';
     }
-  }
-};
-
-char s[N];
-int p[N];
-mana_t<char> zkl;
-
-int main() {
-#if 1
-  freopen("input.in", "r", stdin);
-#endif
-  for ( ; ~scanf("%s", s); ) {
-    int n = strlen(s);
-    zkl(s, n, p);
-    int rv = 0;
-    for (int i = 0; i < n; i++) rv = max(rv, p[i]-1);
-    printf("%d\n", rv);
+    bar[bari] = '\0';
+    // puts(bar);
+    int maxi = 0, res = 0;
+    p[0] = 1;
+    for (int i = 1; bar[i]; i++) {
+      int j = 1;
+      if (maxi+p[maxi] > i)
+        j = min(p[maxi-(i-maxi)], maxi+p[maxi]-i);
+      while (i-j >= 0 && bar[i+j] && bar[i-j] == bar[i+j])
+        j++;
+      p[i] = j;
+      if (i+p[i] > maxi+p[maxi])
+        maxi = i;
+      res = max(res, p[i]);
+    }
+    // for (int i = 0; i < p.size(); i++)
+    //   printf("%d%c", p[i], i<p.size()-1? ' ': '\n');
+    printf("%d\n", res-1);
   }
   return 0;
 }
