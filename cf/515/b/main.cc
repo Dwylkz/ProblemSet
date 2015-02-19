@@ -43,7 +43,7 @@ int main()
     scanf("%d", &gi);
     g[gi] = true;
   }
-  int lcm = n/GCD(n, m)*m;
+  int lcm = n*m;
   for (int i = 0; i < lcm; i++) {
     int bi = i%n;
     int gi = i%m;

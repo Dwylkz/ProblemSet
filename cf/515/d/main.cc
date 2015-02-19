@@ -31,7 +31,7 @@ bool IsValid(int x, int y)
 
 bool Check(int x, int y, int* rx, int* ry)
 {
-  int cnt = 0, ri = 0;
+  int cnt = 0, ri = -1;
   for (int i = 0; i < DN; i++) {
     int tx = x+D[i][0];
     int ty = y+D[i][1];
@@ -45,6 +45,9 @@ bool Check(int x, int y, int* rx, int* ry)
     if (cnt > 1) {
       return false;
     }
+  }
+  if (ri == -1) {
+    return false;
   }
   b[x][y] = C[ri][0];
   b[*rx][*ry] = C[ri][1];

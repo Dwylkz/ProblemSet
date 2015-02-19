@@ -20,12 +20,12 @@ const vector<vector<int>> P = {
   {},
   {2},
   {3},
-  {2, 2},
+  {3, 2, 2},
   {5},
-  {2, 3},
+  {5, 3},
   {7},
-  {2, 2, 2},
-  {3, 3}
+  {7, 2, 2, 2},
+  {7, 3, 3, 2}
 };
 
 char s[N];
@@ -35,22 +35,13 @@ int main()
 {
   scanf("%d%s", &n, s);
   for (int i = 0; i < n; i++) {
-    if (s[i]-'0' >= 5) {
-      h[s[i]-'0']++;
-      continue;
-    }
-    for (int j = 2; j <= s[i]-'0'; j++) {
-      for (auto pi: P[j]) {
-        h[pi]++;
-      }
+    for (auto pi: P[s[i]-'0']) {
+      h[pi]++;
     }
   }
   for (int i = M-1; i >= 0; i--) {
     for (int j = 0; j < h[i]; j++) {
       printf("%d", i);
-      if (i == 3) {
-        h[2]--;
-      }
     }
   }
   puts("");
