@@ -1,7 +1,8 @@
+CXX=g++
+CPPFLAGS += -std=c++11
+
 main: main.cc
-	gcc main.cc -o main -lstdc++ -g
-.PHONY: debug clean run
-debug:
-	gdb main
+
+.PHONY: run
 run:
-	./main
+	@for i in *.in; do echo "test $${i}"; cat $${i} | ./main; done

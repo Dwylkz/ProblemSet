@@ -1,28 +1,35 @@
+#include <algorithm>
+#include <cctype>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <deque>
 #include <iostream>
+#include <map>
+#include <queue>
+#include <set>
+#include <string>
 #include <vector>
+
 using namespace std;
-const int N = 1e5+10;
 
-char p[N];
+const int N = 1e5+5;
 
-int main() {
-#if 1
-  freopen("input.in", "r", stdin);
-#endif
-  for ( ; ~scanf("%s", p); ) {
-    int n = strlen(p);
-    if (n&1) {
-      puts("No");
-      continue;
-    }
-    vector<char> v;
-    for (int i = 0; i < n; i++)
-      if (v.size() && v.back() == p[i]) v.pop_back();
-      else v.push_back(p[i]);
-    puts(!v.size()? "Yes": "No");
-  }
+int n;
+char s[N];
+
+int main()
+{
+  scanf("%s", s);
+  vector<char> st;
+  for (int i = 0; s[i]; i++)
+    if (st.size() > 0 && st.back() == s[i])
+      st.pop_back();
+    else
+      st.push_back(s[i]);
+  if (st.size() > 0)
+    puts("No");
+  else
+    puts("Yes");
   return 0;
 }
