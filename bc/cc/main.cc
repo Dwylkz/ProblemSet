@@ -1,3 +1,4 @@
+#pragma comment(linker,"/STACK:65536000,65536000")
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
