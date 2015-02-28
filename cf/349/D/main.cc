@@ -55,7 +55,7 @@ void dfs(int u, int p = -1) {
 }
 
 int main() {
-#if 1
+#if 0
   freopen("input.in", "r", stdin);
 #endif
   for ( ; ~scanf("%d", &n); ) {
