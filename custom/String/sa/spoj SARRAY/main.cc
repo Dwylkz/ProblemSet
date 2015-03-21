@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
@@ -59,103 +60,79 @@ void DC3(char* s, int n, int* sa)
 {
   struct L {
     struct Cmp {
-      int *k1, *k2;
-
       Cmp(int* k1, int* k2): k1(k1), k2(k2) {}
 
-      static bool Cmp2(int* k1, int* k2, int l, int r)
+      bool Cmp2(int l, int r)
       {
         return k1[l] < k1[r] || (k1[l] == k1[r] && k2[l+1] < k2[r+1]);
       }
 
-      static bool Cmp3(int* k1, int* k2, int l, int r)
+      bool Cmp3(int l, int r)
       {
-        return k1[l] < k1[r] || (k1[l] == k1[r] && Cmp2(k1, k2, l+1, r+1));
-      }
-
-      static bool Equal(int* k, int l, int r)
-      {
-        return k[l] == k[r] && k[l+1] == k[r+1] && k[l+2] == k[r+2];
+        return k1[l] < k1[r] || (k1[l] == k1[r] && Cmp2(l+1, r+1));
       }
 
       bool operator () (int l, int r)
       {
-        return l%3 == 1? Cmp2(k1, k2, l, r): Cmp3(k1, k2, l, r);
+        return l%3 == 1? Cmp2(l, r): Cmp3(l, r);
       }
+
+      int *k1, *k2;
     };
 
-    static void Sort(int* h, int m, int* k, int* v, int n, int* r)
+    static void Sort(int m, int* k, int* v, int n, int* r)
     {
+      static int h[N];
       fill(h, h+m, 0);
       for (int i = 0; i < n; i++) h[k[v[i]]]++;
       for (int i = 1; i < m; i++) h[i] += h[i-1];
       for (int i = n-1; i >= 0; i--) r[--h[k[v[i]]]] = v[i];
     }
 
-    static void Init(int* k, int* v, int n, int c, int& m)
+    static void DC3(int* s, int n, int* sa)
     {
-      for (int i = 0; i < n; i++) {
-        v[i] = 3*i+c;
-        m = max(m, k[v[i]]+1);
+      static int ts[N+3], i0[(N+2)/3];
+      int* ti = sa, *i12 = sa+n, *s12 = s+n+3;
+      int n0 = 0, n1 = (n+2)/3, n12 = 0, m = 1, d = (n%3 == 1); 
+      for (int i = 0; i < n+d; i++) {
+        m = max(m, s[i]+1);
+        if (i%3 > 0) ti[n12++] = i;
       }
-    }
-
-    static void Print(int* k, int n, int* w, int* v, int m)
-    {
-      for (int i = 0; i < m; i++) {
-        printf("%2d: ", v[i]);
-        if (v[i]%3 == 1) printf("(%2d, %2d): ", k[v[i]], w[v[i]+1]);
-        else if (v[i]%3 == 2) printf("(%2d, %2d, %2d): ", k[v[i]], k[v[i]+1], w[v[i]+2]);
-        else printf("(%2d, %2d) (%2d, %2d, %2d): ", k[v[i]], w[v[i]+1], k[v[i]], k[v[i]+1], w[v[i]+2]);
-        for (int j = v[i]; j < n; j++)
-          putchar(k[j]);
-        puts("");
+      s[n] = s[n+1] = s[n+2] = 0;
+      Sort(m, s+2, ti, n12, i12);
+      Sort(m, s+1, i12, n12, ti);
+      Sort(m, s, ti, n12, i12);
+      ts[i12[0]] = 0;
+      for (int i = 1; i < n12; i++) {
+        int l = i12[i-1], r = i12[i];
+        if (s[l] == s[r] && s[l+1] == s[r+1] && s[l+2] == s[r+2]) ts[r] = ts[l];
+        else ts[r] = ts[l]+1;
       }
-      puts("----");
-    }
-
-    static void DC3(int n, int* cr, int* ci, int* i12)
-    {
-      static int tr[N], ti[N], i0[N];
-      for (int i = 0; i < 3; i++) cr[n+i] = 0;
-      int n0 = (n+2)/3, n1 = (n+1)/3, n2 = n/3, n12 = n1+n2, m = 1;
-      Init(cr, ti, n1, 1, m);
-      Init(cr, ti+n1, n2, 2, m);
-      Sort(ci, m, cr+2, ti, n12, i12);
-      Sort(ci, m, cr+1, i12, n12, ti);
-      Sort(ci, m, cr, ti, n12, i12);
-
-      m = 1;
-      tr[i12[0]] = m++;
-      for (int i = 1; i < n12; i++)
-        tr[i12[i]] = Cmp::Equal(cr, i12[i], i12[i-1])? m-1: m++;
-
-      if (m < n12) {
-        for (int i = 0; i < n1; i++) cr[n+i] = tr[i*3+1];
-        for (int i = 0; i < n2; i++) cr[n+n1+i] = tr[i*3+2];
-        DC3(n12, cr+n, ci, i12+n12);
+      if (ts[i12[n12-1]]+1 < n12) {
         for (int i = 0; i < n12; i++)
-          if (ci[i] < n1) tr[3*ci[i]+1] = i;
-          else tr[3*(ci[i]-n1)+2] = i;
-        for (int i = 0; i < 3; i++) cr[n+i] = tr[n+i] = 0;
+          if (i < n1) s12[i] = ts[3*i+1]+1;
+          else s12[i] = ts[3*(i-n1)+2]+1;
+        DC3(s12, n12, i12);
+        for (int i = 0; i < n12; i++) {
+          if (i12[i] < n1) i12[i] = 3*i12[i]+1;
+          else i12[i] = 3*(i12[i]-n1)+2;
+          ts[i12[i]] = i+1;
+        }
+        ts[n] = ts[n+1] = ts[n+2] = 0;
       }
-
-      m = 1;
-      Init(cr, i0, n0, 0, m);
-      Sort(ci, n12, tr+1, i0, n0, ti);
-      Sort(ci, m, cr, ti, n0, i0);
-
-      printf("n12=%d, n0=%d\n", n12, n0);
-      Print(cr, n, tr, i12, n12);
-      Print(cr, n, tr, i0, n0);
-
-      merge(i12, i12+n12, i0, i0+n0, ci, Cmp(cr, tr));
+      for (int i = 0; i < n12; i++)
+        if (i12[i]%3 == 1) ti[n0++] = i12[i]-1;
+      Sort(m, s, ti, n0, i0);
+      i12 += d;
+      n12 -= d;
+      merge(i0, i0+n0, i12, i12+n12, sa, Cmp(s, ts));
     }
   };
 
-  static int cr[3*N], i12[3*N];
-  for (int i = 0; i < n; i++) cr[i] = s[i];
-  L::DC3(n, cr, sa, i12);
+  static int ts[3*N+300], i12[3*N+300];
+  for (int i = 0; i < n; i++) ts[i] = s[i]+1;
+  L::DC3(ts, n, i12);
+  for (int i = 0; i < n; i++) sa[i] = i12[i];
 }
 
 char s[N];
@@ -168,8 +145,8 @@ int main()
   // DA(s, ns, sa);
   DC3(s, ns, sa);
   for (int i = 0; i < ns; i++) {
-    // printf("%d\n", sa[i]);
-    printf("%d: %s\n", sa[i], s+sa[i]);
+    printf("%d\n", sa[i]);
+    // printf("%d: %s\n", sa[i], s+sa[i]);
   }
   return 0;
 }

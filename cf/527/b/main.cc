@@ -29,13 +29,15 @@ int main()
   for (int i = 0; i < s[i]; i++)
     if (s[i] != t[i] && h[s[i]].size())
       for (auto& hi: h[s[i]]) {
-        x = i;
-        y = hi;
-        maxv = max(maxv, 1);
-        if (t[x] == s[y]) {
-          maxv = 2;
-          printf("%d\n%d %d\n", d-maxv, x+1, y+1);
-          return 0;
+        int tx = i;
+        int ty = hi;
+        int v = 1;
+        if (s[ty] == t[ty]) v--;
+        if (s[ty] == t[tx]) v++;
+        if (v > maxv) {
+          maxv = v;
+          x = tx;
+          y = ty;
         }
       }
   printf("%d\n%d %d\n", d-maxv, x+1, y+1);
