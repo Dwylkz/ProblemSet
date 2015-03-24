@@ -122,7 +122,7 @@ int main()
   DC3(s, n, sa);
   Kasai(s, sa, n, h);
 
-  // for (int i = 0; i < n; i++) printf("%2d: %2d: %s\n", sa[i], h[i], s+sa[i]);
+  for (int i = 0; i < n; i++) printf("%2d: %2d: %s\n", sa[i], h[i], s+sa[i]);
 
   int maxv = 0;
   for (int i = 1; i < n; i++) {
