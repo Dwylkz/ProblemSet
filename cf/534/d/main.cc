@@ -32,6 +32,7 @@ int Size(int t[])
 
 int main()
 {
+  /* TODO */
   scanf("%d", &n);
   int maxv = 0;
   for (int i = 0; i < n; i++) {
