@@ -44,12 +44,11 @@ struct Graph {
     memset(d, -1, sizeof(d));
     queue<int> q;
     q.push(snk);
-    d[snk] = 1;
+    d[snk] = 0;
     while (!q.empty()) {
       int u = q.front();
       q.pop();
       for (int i = h[u]; i != -1; i = e[i].to) {
-        if (~i&1) continue;
         int w = e[i^1].w, v = e[i].v;
         if (d[v] == -1 && w > 0) {
           d[v] = d[u]+1;
@@ -64,11 +63,11 @@ struct Graph {
     if (u == snk) return flow;
     int all = flow;
     for (int i = h[u]; i != -1; i = e[i].to) {
-      int v = e[i].v, w = e[i].w, ri = i^1;
+      int v = e[i].v, w = e[i].w;
       if (!(d[u] == d[v]+1 && w > 0)) continue;
       int df = Flood(v, snk, min(w, all));
       e[i].w -= df;
-      e[ri].w += df;
+      e[i^1].w += df;
       all -= df;
       if (all == 0) return flow;
     }
@@ -88,17 +87,19 @@ int main()
   scanf("%d%d", &n, &m);
   int src = n+n, snk = src+1;
   Graph g;
-  int all = 0;
+  int alla = 0;
   for (int i = 0; i < n; i++) {
     int w;
     scanf("%d", &w);
     g.BAdd(src, i, w);
-    all += w;
+    alla += w;
   }
+  int allb = 0;
   for (int i = 0; i < n; i++) {
     int w;
     scanf("%d", &w);
     g.BAdd(n+i, snk, w);
+    allb += w;
   }
   while (m--) {
     int u, v;
@@ -109,7 +110,7 @@ int main()
   }
   for (int i = 0; i < n; i++) g.BAdd(i, n+i, INF);
   int flow = g.Dicnic(src, snk);
-  if (flow != all) {
+  if (!(alla == allb && flow == alla)) {
     puts("NO");
     return 0;
   }
