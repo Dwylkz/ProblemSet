@@ -1,96 +1,237 @@
-#include <fstream>
-#include <iostream>
-#include <vector>
 #include <cstdio>
-#include <functional>
 #include <cstdlib>
-#include <cstdint>
 #include <string>
-#include <algorithm>
+#include <cstring>
 #include <map>
-#include <sstream>
-#include <cstdarg>
+#include <vector>
+
 using namespace std;
 
-const int N = 1<<16;
-const int M = N*2+5;
-
-int tag[M], l[M], r[M];
-
-void Init()
+namespace algo
 {
-  memset(tag, 0, sizeof(tag));
-  memset(l, -1, sizeof(l));
-  memset(r, -1, sizeof(r));
-  for (int i = N; i < N*2; i++) {
-    l[i] = r[i] = i-N;
-    for (int j = i; j; j >>= 1) {
-      if (l[j] == -1 || l[j] > l[i])
-        l[j] = l[i];
-      if (r[j] == -1 || r[j] < r[i])
-        r[j] = r[i];
+
+namespace string
+{
+
+void MakeKmp(const char* s, const int n, int p[])
+{
+  int i = 1;
+  int j = -1;
+  p[0] = j;
+  while (i < n)
+  {
+    if (s[i] == s[j+1])
+    {
+      p[i] = j+1;
+      i++;
+      j++;
+    }
+    else if (j == -1)
+    {
+      p[i] = j;
+      i++;
+    }
+    else
+    {
+      j = p[j];
     }
   }
 }
 
-void Add(int h, int t, int x)
+void MakeKmpTest()
 {
-  h += N;
-  t += N+2;
-  while (h^t^1) {
-    if (~h&1)
-      tag[h^1] += x;
-    if (t&1)
-      tag[t^1] += x;
-    h >>= 1;
-    t >>= 1;
+  puts("\n***** KMP *****");
+  
+  const char pat[] = "aabbcaabba";
+  int p[sizeof(pat)/sizeof(char)];
+  int npat = strlen(pat);
+  MakeKmp(pat, npat, p);
+  printf("pat=(%s)\n", pat);
+  for (int i = 0; i < npat; i++)
+  {
+    printf("%d%c", p[i], i < npat-1? ' ': '\n');
   }
-  while (h) {
-    tag[h] += x;
-    h >>= 1;
-  }
-}
 
-int Ask(int h, int t)
-{
-  int ret = 0;
-  h += N;
-  t += N+2;
-  while (h^t^1) {
-    if (~h&1)
-      ret += (r[h^1]-l[h^1]+1)*tag[h^1];
-    if (t&1)
-      ret += (r[t^1]-l[t^1]+1)*tag[t^1];
-    h >>= 1;
-    t >>= 1;
-  }
-  while (h) {
-    ret += (r[h]-l[h]+1)*tag[h];
-    h >>= 1;
-  }
-  return ret;
-}
-
-int n, a[N];
-
-int main()
-{
-  Init();
-  scanf("%d", &n);
-  for (int i = 0; i < n; i++)
-    scanf("%d", a+i);
-  for (int i = 1; i < n; i++)
-    a[i] += a[i-1];
-  int t;
-  while (~scanf("%d", &t)) {
-    int x, y, z;
-    if (t == 1) {
-      scanf("%d%d", &x, &y);
-      printf("%d\n", Ask(x, y)+a[y]-(x > 0? a[x-1]: 0));
-    } else {
-      scanf("%d%d%d", &x, &y, &z);
-      Add(x, y, z);
+  const char str[] = "aabbcaabbaaabbcaabcbaaabbcaabba";
+  int nstr = strlen(str);
+  printf("str=(%s)\n", str);
+  int i = 0;
+  int j = -1;
+  while (i < nstr)
+  {
+    if (str[i] == pat[j+1])
+    {
+      i++;
+      j++;
+      if (j+1 == npat)
+      {
+        j = p[j];
+        printf("match: last=%d, suffix=(%s)\n", i, str+(i-npat));
+      }
+    }
+    else if (j == -1)
+    {
+      i++;
+    }
+    else
+    {
+      j = p[j];
     }
   }
+}
+
+struct AcA
+{
+  struct Node
+  {
+    map<int, Node*> succ;
+    Node* fail;
+    int len;
+    int ac;
+
+    Node* Init()
+    {
+      succ.clear();
+      fail = NULL;
+      len = 0;
+      ac = 0;
+      return this;
+    }
+  };
+
+  Node pool[2<<15];
+  Node* top;
+  Node* root;
+
+  void Init()
+  {
+    top = pool;
+    root = top->Init();
+    top++;
+  }
+
+  void Add(const char s[])
+  {
+    Node* x = root;
+    for (int i = 0; s[i]; i++)
+    {
+      char c = s[i];
+      if (!x->succ.count(c))
+      {
+        x->succ[c] = top->Init();
+        top++;
+      }
+      x = x->succ[c];
+    }
+    x->len = strlen(s);
+    x->ac = 1;
+    printf("suck: str=(%s) size=%ld\n", s, top-pool);
+  }
+
+  void Make()
+  {
+    vector<Node*> q;
+    root->fail = NULL;
+    for (auto& p: root->succ)
+    {
+      q.push_back(p.second);
+      q.back()->fail = root;
+    }
+    for (int i = 0; i < q.size(); i++)
+    {
+      Node* u = q[i];
+      for (auto& p: u->succ)
+      {
+        char c = p.first;
+        Node* v = p.second;
+        Node* fail = u->fail;
+        while (fail != NULL && !fail->succ.count(c))
+        {
+          fail = fail->fail;
+        }
+        if (fail == NULL) 
+        {
+          v->fail = root;
+        }
+        else
+        {
+          v->fail = fail->succ[c];
+          v->ac += v->fail->ac;
+          v->len = max(v->fail->len, v->len);
+        }
+        q.push_back(v);
+      }
+    }
+  }
+
+  void Match(const char s[])
+  {
+    Node* x = root;
+    for (int i = 0; s[i]; i++)
+    {
+      char c = s[i];
+      while (x != NULL && !x->succ.count(c))
+      {
+        x = x->fail;
+      }
+      if (x == NULL)
+      {
+        x = root;
+      }
+      else
+      {
+        x = x->succ[c];
+        if (x->ac > 0)
+        {
+          printf("match: ac=%d pos=%d len=%d from=(%s)\n", x->ac, i, x->len,  s+(i+1-x->len));
+        }
+      }
+    }
+  }
+};
+
+void MakeAcATest()
+{
+  puts("\n***** Ac Automaton *****");
+  const char* pats[] = {
+    "ab",
+    "bc",
+    "abcbc",
+    "cd;//,",
+    "cdjkcjdk",
+    NULL
+  };
+  const char* str = "abcd;//,cdjabcbcdjkcjdkkcjdkcdjkcjdkcd;//,";
+  AcA aca;
+  aca.Init();
+  for (int i = 0; pats[i]; i++)
+  {
+    aca.Add(pats[i]);
+  }
+  aca.Make();
+  printf("str=(%s)\n", str);
+  aca.Match(str);
+}
+
+void Test()
+{
+  puts("------ string begin ------");
+  MakeKmpTest();
+  MakeAcATest();
+  puts("\n------ string end   ------");
+}
+
+} /* string */
+
+void Test()
+{
+  string::Test();
+}
+
+} /* algo */
+
+int main(int argc, char** argv)
+{
+  algo::Test();
   return 0;
 }

@@ -2,6 +2,7 @@
 ## Eclipse
 #################
 
+*.dSYM
 *.pydevproject
 .project
 .metadata
