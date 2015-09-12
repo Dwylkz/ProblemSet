@@ -12,6 +12,7 @@ run:
 		cat $${temp}; \
 		if [[ -n $$(diff $${temp} $${i/in/out}) ]]; then \
 			printf "[31mNO"; \
+			diff $${temp} $${i/in/out}; \
 		else \
 			printf "[36mYES"; \
 		fi; \

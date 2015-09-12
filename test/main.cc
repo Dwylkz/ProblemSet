@@ -4,6 +4,7 @@
 #include <cstring>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -213,12 +214,121 @@ void MakeAcATest()
   aca.Match(str);
 }
 
+void Manacher(const char s[], const int& n, int p[])
+{
+  int mi = 0;
+  int ml = 1;
+  p[mi] = ml;
+  for (int i = 1; i < n; i++)
+  {
+    int& l = p[i];
+    if (mi+ml > i)
+    {
+      l = min(p[mi-(i-mi)], mi+ml-i);
+    }
+    else
+    {
+      l = 1;
+    }
+    while (i-l >= 0 && i+l < n && s[i-l] == s[i+l])
+    {
+      l++;
+    }
+    if (l > ml)
+    {
+      ml = l;
+      mi = i;
+    }
+  }
+}
+
+void ManacherTest()
+{
+  puts("\n***** ManacherTest *****");
+  const char str[] = "#a#b#a#b#a#b#a#b#a#;#a#";
+  int p[sizeof(str)/sizeof(char)];
+  Manacher(str, strlen(str), p);
+  printf("str=(%s)\n", str);
+  for (int i = 0; str[i]; i++) printf("%d%c", p[i], str[i+1]? ' ': '\n');
+}
+
+void MakeSA(const char s[], int n, int p[])
+{
+  struct Aux
+  {
+    void Sort(int *s, int *k, int n, int m, int* r)
+    {
+    }
+
+    void Core(int *s, int n, int* p, int* id)
+    {
+      int sigma = max_element(s, s+n);
+      for (int i = 0; i < n; i++) p[i] = i;
+      Sort(p, s, n, sigma, id);
+      for (int l = 1; l < n; l <<= 1)
+      {
+      }
+    }
+  };
+}
+
+void Kasai(const char s[], int p[], int n, int h[])
+{
+}
+
+void SuffixArrayTest()
+{
+  puts("\n***** SuffixArray *****");
+}
+
+int MinimumNotaion(const char s[], const int& n)
+{
+  int i = 0;
+  int j = 1;
+  int l = 0;
+  while (l < n)
+  {
+    int ti = (i+l)%n;
+    int tj = (j+l)%n;
+    if (s[ti] == s[tj])
+    {
+      l++;
+    }
+    else if (s[ti] > s[tj])
+    {
+      i = (ti+1)%n;
+      l = 0;
+    } 
+    else
+    {
+      j = (tj+1)%n;
+      l = 0;
+    }
+    if (i == j) j = (j+1)%n;
+  }
+  return i;
+}
+
+void MinimumNotaionTest()
+{
+  puts("\n***** MinimumNotaion *****");
+  const char str[] = "babbababba";
+  const int n = strlen(str);
+  printf("str=(%s)\n", str);
+  int pos = MinimumNotaion(str, n);
+  printf("pos=%d\n", pos);
+  for (int i = 0; i < n; i++) putchar(str[(i+pos)%n]);
+  puts("");
+}
+
 void Test()
 {
-  puts("------ string begin ------");
+  puts("\n----- string begin -----");
   MakeKmpTest();
   MakeAcATest();
-  puts("\n------ string end   ------");
+  ManacherTest();
+  SuffixArrayTest();
+  MinimumNotaionTest();
 }
 
 } /* string */
