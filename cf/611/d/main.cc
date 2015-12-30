@@ -34,18 +34,8 @@ int main()
     for (int l = 1; l < i; l++) {
       if (p[i-l] != '0') {
         f[i][l] = g[i-l][min(i-l, l-1)];
-        if (f[i-l][l] > 0) {
-          if (i-2*l+1 < 1) f[i][l] = Add(f[i][l], f[i-l][l]);
-          else {
-            // cout << "l=";
-            // for_each(p+i-2*l, p+i-l, [](char& c){cout<<c;});
-            // cout << endl;
-            // cout << "r=";
-            // for_each(p+i-l, p+i, [](char& c){cout<<c;});
-            // cout << endl;
-            if (strncmp(p+i-2*l, p+i-l, l) < 0) f[i][l] = Add(f[i][l], f[i-l][l]);
-          }
-        }
+        if (f[i-l][l] > 0 && strncmp(p+i-2*l, p+i-l, l) < 0)
+          f[i][l] = Add(f[i][l], f[i-l][l]);
       }
       g[i][l] = Add(g[i][l-1], f[i][l]);
     }
