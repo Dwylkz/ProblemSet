@@ -42,9 +42,6 @@ int main()
     f[i][i] = 1;
     g[i][i] = Add(g[i][i-1], f[i][i]);
   }
-  // for (int i = 1; i <= n; i++)
-  //   for (int j = 1; j <= n; j++)
-  //     printf("(%5d, %5d)%c", f[i][j], g[i][j], j == n? '\n': ' ');
   printf("%d\n", g[n][n]);
   return 0;
 }
