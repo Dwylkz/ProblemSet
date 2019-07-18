@@ -13,19 +13,24 @@
 
 using namespace std;
 
-int T;
-long long n;
-
 int main()
 {
+  int T, n, b;
   scanf("%d", &T);
   while (T--)
   {
-    scanf("%lld", &n);
-    for (int i = 2; 1ll*i*i <= n; i++)
+    scanf("%d%d", &n, &b);
+    bool yes = false;
+    for (int i = 0; i < n; i++)
     {
-      pint 
+      int a;
+      scanf("%d", &a);
+      if ((a+b)%7 == 0)
+      {
+        yes = true;
+      }
     }
+    puts(yes? "Yes": "No");
   }
   return 0;
 }
